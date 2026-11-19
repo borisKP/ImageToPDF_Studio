@@ -31,9 +31,9 @@ FILES = [
     "requirements.txt", "build.bat", "ImageToPDF_Studio.spec",
     ".github/workflows/build.yml",
     # 源码
-    "src/app.py", "src/core.py", "src/archive.py",
+    "src/app.py", "src/core.py", "src/archive.py", "src/i18n.py", "src/theme.py",
     # 测试
-    "tests/test_core.py", "tests/test_gui.py", "tests/test_archive.py",
+    "tests/test_core.py", "tests/test_gui.py", "tests/test_archive.py", "tests/test_i18n_theme.py",
     # 文档
     "docs/使用说明.html", "docs/源码说明.html",
     # 资源

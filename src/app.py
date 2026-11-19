@@ -19,19 +19,22 @@ from PySide6.QtWidgets import (
     QListWidget, QListWidgetItem, QAbstractItemView, QPushButton, QLabel,
     QGroupBox, QComboBox, QCheckBox, QLineEdit, QSpinBox, QDoubleSpinBox,
     QSlider, QRadioButton, QButtonGroup, QFileDialog, QMessageBox, QProgressBar,
-    QScrollArea, QSplitter, QMenu, QDialog, QFrame, QSizePolicy, QToolBar,
+    QScrollArea, QSplitter, QMenu, QDialog, QFrame, QSizePolicy, QToolBar, QMenuBar,
     QTableWidget, QTableWidgetItem, QHeaderView, QStackedWidget, QInputDialog,
 )
 
 from PIL import Image
 import core
 import archive
+import i18n
+import theme
+from i18n import tr
 
 APP_NAME = "ImageToPDF Studio"
-APP_VER = "1.8"
+APP_VER = "1.9"
 LICENSE_NAME = "MIT License"
 PROJECT_URL = "https://github.com/borisKP/ImageToPDF_Studio"
-BUILD_DATE = "2026-11-09"
+BUILD_DATE = "2026-11-19"
 
 
 def resource_path(rel: str) -> str:
@@ -46,60 +49,6 @@ def resource_path(rel: str) -> str:
 QUALITY_LABELS = [(0, 30, "最低"), (30, 50, "低"), (50, 70, "中"),
                   (70, 88, "高"), (88, 101, "最高")]
 
-QSS = """
-QWidget { font-family: "Microsoft YaHei UI", "Segoe UI", sans-serif; font-size: 12px; color: #1f2937; }
-QMainWindow, QDialog { background: #f4f6fa; }
-QGroupBox {
-    border: 1px solid #e2e8f0; border-radius: 8px; margin-top: 12px;
-    background: #ffffff; padding: 10px 8px 8px 8px;
-}
-QGroupBox::title { subcontrol-origin: margin; left: 12px; padding: 0 5px; color: #0f172a; font-weight: 600; }
-QLabel#hint { color: #64748b; font-size: 11px; }
-QLabel#section { color: #334155; font-weight: 600; }
-QPushButton {
-    background: #ffffff; border: 1px solid #d7dfea; border-radius: 6px;
-    padding: 6px 12px; color: #1e293b;
-}
-QPushButton:hover { background: #eef4ff; border-color: #9bbcf7; }
-QPushButton:pressed { background: #e0ebff; }
-QPushButton:disabled { color: #9aa5b4; background: #f1f3f6; }
-QPushButton#primary { background: #2563eb; border: 1px solid #2563eb; color: #ffffff; font-weight: 600; padding: 8px 18px; }
-QPushButton#primary:hover { background: #1d4ed8; }
-QPushButton#primary:disabled { background: #a9bff0; border-color: #a9bff0; color: #f8fafc; }
-QLineEdit, QComboBox, QSpinBox, QDoubleSpinBox {
-    background: #ffffff; border: 1px solid #d7dfea; border-radius: 6px;
-    padding: 5px 7px; selection-background-color: #bfdbfe;
-}
-QLineEdit:focus, QComboBox:focus, QSpinBox:focus, QDoubleSpinBox:focus { border-color: #60a5fa; }
-QComboBox::drop-down { border: none; width: 18px; }
-QListWidget { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px; }
-QListWidget::item { border-radius: 6px; padding: 4px; color: #334155; }
-QListWidget::item:selected { background: #dbeafe; color: #1e3a8a; }
-QListWidget::item:hover { background: #f1f5fd; }
-QTableWidget { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;
-    gridline-color: #eef2f7; selection-background-color: #dbeafe; selection-color: #1e3a8a; }
-QTableWidget::item { padding: 3px 6px; }
-QHeaderView::section { background: #f1f5f9; border: none; border-right: 1px solid #e8edf4;
-    border-bottom: 1px solid #dfe6ef; padding: 6px 8px; color: #334155; font-weight: 600; }
-QProgressBar { border: 1px solid #e2e8f0; border-radius: 6px; background: #eef2f7; height: 16px; text-align: center; }
-QProgressBar::chunk { background: #3b82f6; border-radius: 5px; }
-QSlider::groove:horizontal { height: 5px; background: #e2e8f0; border-radius: 3px; }
-QSlider::handle:horizontal { width: 14px; background: #2563eb; border-radius: 7px; margin: -5px 0; }
-QCheckBox, QRadioButton { spacing: 6px; }
-QToolBar { background: #ffffff; border-bottom: 1px solid #e2e8f0; spacing: 4px; padding: 6px; }
-QStatusBar { color: #475569; }
-QSplitter::handle { background: #e2e8f0; }
-QMenuBar { background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 3px 6px; }
-QMenuBar::item { padding: 5px 12px; border-radius: 5px; color: #1e293b; }
-QMenuBar::item:selected { background: #e8f0fe; color: #1e3a8a; }
-QMenu { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px; }
-QMenu::item { padding: 6px 26px 6px 18px; border-radius: 4px; }
-QMenu::item:selected { background: #dbeafe; color: #1e3a8a; }
-QMenu::separator { height: 1px; background: #e8edf4; margin: 4px 8px; }
-QLabel#version { color: #64748b; padding-right: 12px; font-size: 11px; }
-QLabel#aboutTitle { font-size: 19px; font-weight: 700; color: #0f172a; }
-QLabel#aboutBody { color: #475569; font-size: 12px; }
-"""
 
 
 def human_size(n: float) -> str:
@@ -113,8 +62,8 @@ def human_size(n: float) -> str:
 def quality_text(q: int) -> str:
     for lo, hi, t in QUALITY_LABELS:
         if lo <= q < hi:
-            return t
-    return "中"
+            return tr(t)
+    return tr("中")
 
 
 # ---------------------------------------------------------------- 缩略图任务
@@ -231,7 +180,13 @@ class ImageList(QListWidget):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle(f"{APP_NAME}  v{APP_VER}   —   按图片原尺寸生成 PDF")
+        i18n.bus.language_changed.connect(self.retranslate_ui)
+        theme.bus.theme_changed.connect(self._on_theme_changed)
+        self._theme_timer = QTimer(self)
+        self._theme_timer.timeout.connect(self._check_system_theme)
+        self._theme_timer.start(3000)
+        self._last_system_dark = theme.system_is_dark()
+        self.setWindowTitle(f"{APP_NAME}  v{APP_VER}   —   {tr('按图片原尺寸生成 PDF')}")
         self.resize(1240, 800)
         self.setMinimumSize(1020, 660)
         self.setAcceptDrops(True)
@@ -248,6 +203,85 @@ class MainWindow(QMainWindow):
         self._build_ui()
         self._refresh_status()
 
+    # ------------------------------------------------------------ 语言 / 主题
+    def _check_system_theme(self):
+        if theme.current_theme() != "auto":
+            return
+        dark = theme.system_is_dark()
+        if dark != self._last_system_dark:
+            self._last_system_dark = dark
+            theme.apply()
+
+    def _on_theme_changed(self, mode):
+        theme.apply()
+
+    def retranslate_ui(self, lang=None):
+        """运行时切换语言：遍历已创建的控件/菜单，用目标语言重设显示文本。"""
+        target = i18n.current_lang()
+
+        def cv(text):
+            return i18n.convert(text, target) if isinstance(text, str) else text
+
+        self.setWindowTitle(cv(self.windowTitle()))
+        for w in self.findChildren(QWidget) + [self]:
+            cls = type(w).__name__
+            if hasattr(w, "text") and cls not in ("QTableWidgetItem",):
+                try:
+                    w.setText(cv(w.text()))
+                except Exception:
+                    pass
+            if hasattr(w, "title") and cls not in ("QMainWindow", "QDialog"):
+                try:
+                    w.setTitle(cv(w.title()))
+                except Exception:
+                    pass
+            if hasattr(w, "placeholderText"):
+                try:
+                    w.setPlaceholderText(cv(w.placeholderText()))
+                except Exception:
+                    pass
+            if hasattr(w, "toolTip"):
+                try:
+                    w.setToolTip(cv(w.toolTip()))
+                except Exception:
+                    pass
+            if isinstance(w, QComboBox):
+                idx = w.currentIndex()
+                data = [w.itemData(i) for i in range(w.count())]
+                items = [cv(w.itemText(i)) for i in range(w.count())]
+                w.blockSignals(True)
+                w.clear()
+                for i, t in enumerate(items):
+                    w.addItem(t)
+                    w.setItemData(i, data[i])
+                w.setCurrentIndex(idx)
+                w.blockSignals(False)
+        for mb in self.findChildren(QMenuBar) + ([self.menuBar()] if self.menuBar() else []):
+            for a in mb.actions():
+                a.setText(cv(a.text()))
+                m = a.menu()
+                if m:
+                    m.setTitle(cv(m.title()))
+                    for sub in m.actions():
+                        sub.setText(cv(sub.text()))
+        for tb in self.findChildren(QToolBar):
+            for a in tb.actions():
+                a.setText(cv(a.text()))
+                a.setToolTip(cv(a.toolTip()))
+        self._refresh_status()
+        self._update_dpi_hint(self.target_dpi.value())
+        self._update_pw_hint(self.pw_user.text())
+
+    def _set_language(self, code):
+        i18n.set_lang(code)
+        for k, a in getattr(self, "_lang_actions", {}).items():
+            a.setChecked(k == code)
+
+    def _set_theme(self, mode):
+        theme.set_theme(mode)
+        for k, a in getattr(self, "_theme_actions", {}).items():
+            a.setChecked(k == mode)
+
     # ------------------------------------------------------------ UI
     def _build_ui(self):
         central = QWidget()
@@ -259,17 +293,17 @@ class MainWindow(QMainWindow):
         tb = QToolBar()
         tb.setMovable(False)
         for text, slot, tip in [
-            ("添加图片", self.add_files, "选择任意数量的图片"),
-            ("添加文件夹", self.add_folder, "导入整个文件夹内的图片"),
-            ("添加压缩包", self.add_archives, "ZIP / 7Z / RAR，可带密码；直接把图片导入列表"),
+            (tr("添加图片"), self.add_files, tr("选择任意数量的图片")),
+            (tr("添加文件夹"), self.add_folder, tr("导入整个文件夹内的图片")),
+            (tr("添加压缩包"), self.add_archives, tr("ZIP / 7Z / RAR，可带密码；直接把图片导入列表")),
             ("|", None, ""),
-            ("移除选中", self.remove_selected, "从列表移除"),
-            ("清空", self.clear_all, ""),
+            (tr("移除选中"), self.remove_selected, tr("从列表移除")),
+            (tr("清空"), self.clear_all, ""),
             ("|", None, ""),
-            ("↑ 上移", lambda: self.move_selected(-1), ""),
-            ("↓ 下移", lambda: self.move_selected(1), ""),
-            ("置顶", self.pin_top, ""),
-            ("反转顺序", self.reverse_order, ""),
+            (tr("↑ 上移"), lambda: self.move_selected(-1), ""),
+            (tr("↓ 下移"), lambda: self.move_selected(1), ""),
+            (tr("置顶"), self.pin_top, ""),
+            (tr("反转顺序"), self.reverse_order, ""),
         ]:
             if text == "|":
                 tb.addSeparator()
@@ -288,24 +322,24 @@ class MainWindow(QMainWindow):
         lv = QVBoxLayout(left)
         lv.setContentsMargins(12, 10, 6, 10)
         head = QHBoxLayout()
-        self.count_label = QLabel("图片列表")
+        self.count_label = QLabel(tr("图片列表"))
         self.count_label.setObjectName("section")
         head.addWidget(self.count_label)
-        self.view_btn = QPushButton("切换为：详细信息")
-        self.view_btn.setToolTip("左侧在「预览小图」与「文字详细信息（无缩略图）」之间切换")
+        self.view_btn = QPushButton(tr("切换为：详细信息"))
+        self.view_btn.setToolTip(tr("左侧在「预览小图」与「文字详细信息（无缩略图）」之间切换"))
         self.view_btn.clicked.connect(self.toggle_view)
         head.addWidget(self.view_btn)
         head.addStretch(1)
-        head.addWidget(QLabel("排序："))
+        head.addWidget(QLabel(tr("排序：")))
         self.sort_combo = QComboBox()
         self.sort_combo.addItems([
-            "文件名（自然 · 升序）", "文件名（自然 · 降序）", "文件名（字母 · 升序）",
-            "修改时间（旧→新）", "修改时间（新→旧）", "文件大小（小→大）", "文件大小（大→小）",
-            "扩展名", "当前手动顺序",
+            tr("文件名（自然 · 升序）"), tr("文件名（自然 · 降序）"), tr("文件名（字母 · 升序）"),
+            tr("修改时间（旧→新）"), tr("修改时间（新→旧）"), tr("文件大小（小→大）"), tr("文件大小（大→小）"),
+            tr("扩展名"), tr("当前手动顺序"),
         ])
         self.sort_combo.setMinimumWidth(180)
         head.addWidget(self.sort_combo)
-        sort_btn = QPushButton("应用排序")
+        sort_btn = QPushButton(tr("应用排序"))
         sort_btn.clicked.connect(self.apply_sort)
         head.addWidget(sort_btn)
         lv.addLayout(head)
@@ -320,8 +354,8 @@ class MainWindow(QMainWindow):
 
         self.detail = QTableWidget(0, 9)
         self.detail.setHorizontalHeaderLabels([
-            "#", "文件名", "格式", "像素尺寸", "DPI", "页面尺寸 (mm)",
-            "文件大小", "修改时间", "所在路径",
+            "#", tr("文件名"), tr("格式"), tr("像素尺寸"), "DPI", tr("页面尺寸 (mm)"),
+            tr("文件大小"), tr("修改时间"), tr("所在路径"),
         ])
         self.detail.verticalHeader().setVisible(False)
         self.detail.verticalHeader().setDefaultSectionSize(25)
@@ -345,7 +379,7 @@ class MainWindow(QMainWindow):
         lv.addWidget(self.stack, 1)
 
         self.tip_label = QLabel(
-            "提示：可直接把图片/文件夹拖进窗口；列表内拖拽调整顺序；右键可置顶、上移、下移、置底；双击预览大图。")
+            tr("提示：可直接把图片/文件夹拖进窗口；列表内拖拽调整顺序；右键可置顶、上移、下移、置底；双击预览大图。"))
         self.tip_label.setObjectName("hint")
         self.tip_label.setWordWrap(True)
         lv.addWidget(self.tip_label)
@@ -385,15 +419,15 @@ class MainWindow(QMainWindow):
         self.prog.setFixedWidth(260)
         self.prog.setVisible(False)
         bl.addWidget(self.prog)
-        self.open_btn = QPushButton("打开输出文件夹")
+        self.open_btn = QPushButton(tr("打开输出文件夹"))
         self.open_btn.setEnabled(False)
         self.open_btn.clicked.connect(self.open_output_folder)
         bl.addWidget(self.open_btn)
-        self.cancel_btn = QPushButton("取消")
+        self.cancel_btn = QPushButton(tr("取消"))
         self.cancel_btn.setEnabled(False)
         self.cancel_btn.clicked.connect(self.cancel_convert)
         bl.addWidget(self.cancel_btn)
-        self.go_btn = QPushButton("生成 PDF")
+        self.go_btn = QPushButton(tr("生成 PDF"))
         self.go_btn.setObjectName("primary")
         self.go_btn.clicked.connect(self.start_convert)
         bl.addWidget(self.go_btn)
@@ -413,35 +447,53 @@ class MainWindow(QMainWindow):
             menu.addAction(act)
             return act
 
-        m_file = mb.addMenu("文件(&F)")
-        add(m_file, "添加图片…", self.add_files, "Ctrl+O")
-        add(m_file, "添加文件夹…", self.add_folder, "Ctrl+Shift+O")
-        add(m_file, "添加压缩包…（ZIP / 7Z / RAR）", self.add_archives, "Ctrl+Alt+O")
-        add(m_file, "导入压缩包并直接生成 PDF", self.add_archives_and_convert)
+        m_file = mb.addMenu(tr("文件(&F)"))
+        add(m_file, tr("添加图片…"), self.add_files, "Ctrl+O")
+        add(m_file, tr("添加文件夹…"), self.add_folder, "Ctrl+Shift+O")
+        add(m_file, tr("添加压缩包…（ZIP / 7Z / RAR）"), self.add_archives, "Ctrl+Alt+O")
+        add(m_file, tr("导入压缩包并直接生成 PDF"), self.add_archives_and_convert)
         m_file.addSeparator()
-        add(m_file, "清空列表", self.clear_all)
+        add(m_file, tr("清空列表"), self.clear_all)
         m_file.addSeparator()
-        add(m_file, "退出", self.close, "Ctrl+Q")
+        add(m_file, tr("退出"), self.close, "Ctrl+Q")
 
-        m_start = mb.addMenu("开始(&S)")
-        add(m_start, "生成 PDF", self.start_convert, "Ctrl+Return")
-        add(m_start, "取消生成", self.cancel_convert)
+        m_start = mb.addMenu(tr("开始(&S)"))
+        add(m_start, tr("生成 PDF"), self.start_convert, "Ctrl+Return")
+        add(m_start, tr("取消生成"), self.cancel_convert)
         m_start.addSeparator()
-        add(m_start, "上移选中", lambda: self.move_selected(-1), "Ctrl+Up")
-        add(m_start, "下移选中", lambda: self.move_selected(1), "Ctrl+Down")
-        add(m_start, "置顶", self.pin_top, "Ctrl+Home")
-        add(m_start, "置底", self.pin_bottom, "Ctrl+End")
-        add(m_start, "反转顺序", self.reverse_order)
-        add(m_start, "应用排序", self.apply_sort)
+        add(m_start, tr("上移选中"), lambda: self.move_selected(-1), "Ctrl+Up")
+        add(m_start, tr("下移选中"), lambda: self.move_selected(1), "Ctrl+Down")
+        add(m_start, tr("置顶"), self.pin_top, "Ctrl+Home")
+        add(m_start, tr("置底"), self.pin_bottom, "Ctrl+End")
+        add(m_start, tr("反转顺序"), self.reverse_order)
+        add(m_start, tr("应用排序"), self.apply_sort)
         m_start.addSeparator()
-        add(m_start, "移动端一键优化", self.apply_mobile_preset)
-        add(m_start, "随便看看 · 最小最快", self.apply_casual_preset)
+        add(m_start, tr("移动端一键优化"), self.apply_mobile_preset)
+        add(m_start, tr("随便看看 · 最小最快"), self.apply_casual_preset)
 
-        m_view = mb.addMenu("视图(&V)")
-        add(m_view, "切换：预览小图 / 文字详细信息", self.toggle_view, "Ctrl+T")
+        m_view = mb.addMenu(tr("视图(&V)"))
+        add(m_view, tr("切换：预览小图 / 文字详细信息"), self.toggle_view, "Ctrl+T")
 
-        m_help = mb.addMenu("帮助(&H)")
-        add(m_help, "使用说明", self.show_help, "F1")
+        m_pref = mb.addMenu(tr("设置(&P)"))
+        m_lang = m_pref.addMenu(tr("语言"))
+        self._lang_actions = {}
+        for code, name in i18n.LANGS:
+            a = m_lang.addAction(i18n.lang_name(code))
+            a.setCheckable(True)
+            a.setChecked(i18n.current_lang() == code)
+            a.triggered.connect(lambda _=False, c=code: self._set_language(c))
+            self._lang_actions[code] = a
+        m_theme = m_pref.addMenu(tr("外观"))
+        self._theme_actions = {}
+        for mode, label in theme.THEMES:
+            a = m_theme.addAction(tr(label))
+            a.setCheckable(True)
+            a.setChecked(theme.current_theme() == mode)
+            a.triggered.connect(lambda _=False, m=mode: self._set_theme(m))
+            self._theme_actions[mode] = a
+
+        m_help = mb.addMenu(tr("帮助(&H)"))
+        add(m_help, tr("使用说明"), self.show_help, "F1")
         m_help.addSeparator()
         add(m_help, f"关于 {APP_NAME}", self.show_about)
 
@@ -450,11 +502,11 @@ class MainWindow(QMainWindow):
         mb.setCornerWidget(ver, Qt.Corner.TopRightCorner)
 
     def _page_group(self):
-        g = QGroupBox("① 页面尺寸（每页跟随图片，不强制 A4）")
+        g = QGroupBox(tr("① 页面尺寸（每页跟随图片，不强制 A4）"))
         v = QVBoxLayout(g)
-        self.rb_image = QRadioButton("按图片实际尺寸（等同 Acrobat「保留原始尺寸」）")
+        self.rb_image = QRadioButton(tr("按图片实际尺寸（等同 Acrobat「保留原始尺寸」）"))
         self.rb_image.setChecked(True)
-        self.rb_paper = QRadioButton("统一纸张尺寸（图片等比居中适配）")
+        self.rb_paper = QRadioButton(tr("统一纸张尺寸（图片等比居中适配）"))
         bg = QButtonGroup(self)
         bg.addButton(self.rb_image)
         bg.addButton(self.rb_paper)
@@ -464,47 +516,47 @@ class MainWindow(QMainWindow):
         form = QGridLayout()
         form.setSpacing(6)
         r = 0
-        form.addWidget(QLabel("尺寸依据"), r, 0)
+        form.addWidget(QLabel(tr("尺寸依据")), r, 0)
         self.dpi_source = QComboBox()
-        self.dpi_source.addItems(["读取图片自带 DPI", "固定 DPI（忽略元数据）"])
+        self.dpi_source.addItems([tr("读取图片自带 DPI"), tr("固定 DPI（忽略元数据）")])
         form.addWidget(self.dpi_source, r, 1, 1, 2)
         r += 1
-        form.addWidget(QLabel("默认 DPI"), r, 0)
+        form.addWidget(QLabel(tr("默认 DPI")), r, 0)
         self.default_dpi = QDoubleSpinBox()
         self.default_dpi.setRange(24, 1200)
         self.default_dpi.setValue(96)
         self.default_dpi.setDecimals(0)
         form.addWidget(self.default_dpi, r, 1)
-        form.addWidget(self._hint("元数据缺失时使用"), r, 2)
+        form.addWidget(self._hint(tr("元数据缺失时使用")), r, 2)
         r += 1
-        form.addWidget(QLabel("固定 DPI"), r, 0)
+        form.addWidget(QLabel(tr("固定 DPI")), r, 0)
         self.fixed_dpi = QDoubleSpinBox()
         self.fixed_dpi.setRange(24, 1200)
         self.fixed_dpi.setValue(150)
         self.fixed_dpi.setDecimals(0)
         form.addWidget(self.fixed_dpi, r, 1)
-        form.addWidget(self._hint("px ÷ DPI × 72 = 页面 pt"), r, 2)
+        form.addWidget(self._hint(tr("px ÷ DPI × 72 = 页面 pt")), r, 2)
         r += 1
-        form.addWidget(QLabel("最长边限制"), r, 0)
+        form.addWidget(QLabel(tr("最长边限制")), r, 0)
         self.max_edge = QComboBox()
-        self.max_edge.addItems(["不限制", "297 mm（A4 长边）", "420 mm（A3 长边）", "自定义"])
+        self.max_edge.addItems([tr("不限制"), tr("297 mm（A4 长边）"), tr("420 mm（A3 长边）"), tr("自定义")])
         form.addWidget(self.max_edge, r, 1, 1, 2)
         r += 1
-        form.addWidget(QLabel("自定义长边"), r, 0)
+        form.addWidget(QLabel(tr("自定义长边")), r, 0)
         self.max_edge_mm = QDoubleSpinBox()
         self.max_edge_mm.setRange(20, 5000)
         self.max_edge_mm.setValue(297)
         self.max_edge_mm.setDecimals(0)
         self.max_edge_mm.setSuffix(" mm")
         form.addWidget(self.max_edge_mm, r, 1)
-        form.addWidget(self._hint("防止 72dpi 手机照生成巨页"), r, 2)
+        form.addWidget(self._hint(tr("防止 72dpi 手机照生成巨页")), r, 2)
         r += 1
-        form.addWidget(QLabel("纸张"), r, 0)
+        form.addWidget(QLabel(tr("纸张")), r, 0)
         self.paper = QComboBox()
-        self.paper.addItems(list(core.PAPERS.keys()) + ["自定义"])
+        self.paper.addItems(list(core.PAPERS.keys()) + [tr("自定义")])
         form.addWidget(self.paper, r, 1, 1, 2)
         r += 1
-        form.addWidget(QLabel("宽 × 高"), r, 0)
+        form.addWidget(QLabel(tr("宽 × 高")), r, 0)
         self.paper_w = QDoubleSpinBox()
         self.paper_w.setRange(20, 2000)
         self.paper_w.setValue(210)
@@ -520,17 +572,17 @@ class MainWindow(QMainWindow):
         fl.addWidget(self.paper_h)
         form.addWidget(fw, r, 1, 1, 2)
         r += 1
-        self.auto_rotate = QCheckBox("横图自动使用横向纸张")
+        self.auto_rotate = QCheckBox(tr("横图自动使用横向纸张"))
         self.auto_rotate.setChecked(True)
         form.addWidget(self.auto_rotate, r, 0, 1, 3)
         r += 1
-        form.addWidget(QLabel("页边距"), r, 0)
+        form.addWidget(QLabel(tr("页边距")), r, 0)
         self.margin = QDoubleSpinBox()
         self.margin.setRange(0, 100)
         self.margin.setValue(0)
         self.margin.setSuffix(" mm")
         form.addWidget(self.margin, r, 1)
-        form.addWidget(self._hint("按图片尺寸模式下建议 0"), r, 2)
+        form.addWidget(self._hint(tr("按图片尺寸模式下建议 0")), r, 2)
         v.addLayout(form)
 
         self.rb_image.toggled.connect(self._sync_enabled)
@@ -549,30 +601,30 @@ class MainWindow(QMainWindow):
         return g
 
     def _compress_group(self):
-        g = QGroupBox("② 压缩 / 图像优化（仿 Acrobat DC PDF 优化器）")
+        g = QGroupBox(tr("② 压缩 / 图像优化（仿 Acrobat DC PDF 优化器）"))
         v = QVBoxLayout(g)
         hl = QHBoxLayout()
-        hl.addWidget(QLabel("预设档位"))
+        hl.addWidget(QLabel(tr("预设档位")))
         self.preset = QComboBox()
         for key, (label, _) in core.PRESETS.items():
-            self.preset.addItem(label, key)
-        self.preset.addItem("自定义", "custom")
+            self.preset.addItem(tr(label), key)
+        self.preset.addItem(tr("自定义"), "custom")
         self.preset.setCurrentIndex(1)  # 默认「屏幕阅读」
         hl.addWidget(self.preset, 1)
         v.addLayout(hl)
 
         btn_row = QHBoxLayout()
         btn_row.addStretch(1)
-        self.mobile_btn = QPushButton("移动端一键优化")
+        self.mobile_btn = QPushButton(tr("移动端一键优化"))
         self.mobile_btn.setToolTip(
-            "120 ppi / 质量 70 / 最长边 297mm / 统一 baseline JPEG / 单页 ≤4MP")
+            tr("120 ppi / 质量 70 / 最长边 297mm / 统一 baseline JPEG / 单页 ≤4MP"))
         self.mobile_btn.clicked.connect(self.apply_mobile_preset)
         btn_row.addWidget(self.mobile_btn)
-        self.casual_btn = QPushButton("随便看看 · 最小最快")
+        self.casual_btn = QPushButton(tr("随便看看 · 最小最快"))
         self.casual_btn.setObjectName("primary")
         self.casual_btn.setToolTip(
-            "96 ppi / 质量 55 / 最长边 210mm / 统一 baseline JPEG / 单页 ≤1MP；"
-            "只求能快速翻看，画质够用即可")
+            tr("96 ppi / 质量 55 / 最长边 210mm / 统一 baseline JPEG / 单页 ≤1MP；"
+            "只求能快速翻看，画质够用即可"))
         self.casual_btn.clicked.connect(self.apply_casual_preset)
         btn_row.addWidget(self.casual_btn)
         v.addLayout(btn_row)
@@ -580,17 +632,17 @@ class MainWindow(QMainWindow):
         form = QGridLayout()
         form.setSpacing(6)
         r = 0
-        form.addWidget(QLabel("目标分辨率"), r, 0)
+        form.addWidget(QLabel(tr("目标分辨率")), r, 0)
         self.target_dpi = QSpinBox()
         self.target_dpi.setRange(72, 1200)   # 下限 72 ppi：再低移动端拉伸后不可读
         self.target_dpi.setValue(150)
         self.target_dpi.setSuffix(" ppi")
         form.addWidget(self.target_dpi, r, 1)
-        self.dpi_hint = self._hint("屏幕 150 / 印刷 300")
+        self.dpi_hint = self._hint(tr("屏幕 150 / 印刷 300"))
         form.addWidget(self.dpi_hint, r, 2)
         self.target_dpi.valueChanged.connect(self._update_dpi_hint)
         r += 1
-        form.addWidget(QLabel("仅高于此值时"), r, 0)
+        form.addWidget(QLabel(tr("仅高于此值时")), r, 0)
         self.trigger_dpi = QSpinBox()
         self.trigger_dpi.setRange(24, 2000)
         self.trigger_dpi.setValue(225)
@@ -598,55 +650,55 @@ class MainWindow(QMainWindow):
         form.addWidget(self.trigger_dpi, r, 1)
         form.addWidget(self._hint("Acrobat: for images above"), r, 2)
         r += 1
-        form.addWidget(QLabel("JPEG 质量"), r, 0)
+        form.addWidget(QLabel(tr("JPEG 质量")), r, 0)
         self.quality = QSlider(Qt.Orientation.Horizontal)
         self.quality.setRange(1, 100)
         self.quality.setValue(75)
         form.addWidget(self.quality, r, 1)
-        self.quality_lbl = QLabel("75 · 高")
+        self.quality_lbl = QLabel(tr("75 · 高"))
         form.addWidget(self.quality_lbl, r, 2)
         self.quality.valueChanged.connect(
             lambda v: self.quality_lbl.setText(f"{v} · {quality_text(v)}"))
         r += 1
-        form.addWidget(QLabel("重采样算法"), r, 0)
+        form.addWidget(QLabel(tr("重采样算法")), r, 0)
         self.resample = QComboBox()
-        self.resample.addItems(["双立方（渐变最平滑，推荐）", "平均（平坦色块）", "次取样（线稿最快）"])
+        self.resample.addItems([tr("双立方（渐变最平滑，推荐）"), tr("平均（平坦色块）"), tr("次取样（线稿最快）")])
         form.addWidget(self.resample, r, 1, 1, 2)
         v.addLayout(form)
 
-        self.cb_smaller = QCheckBox("仅在体积变小时才替换（不反向增大文件）")
+        self.cb_smaller = QCheckBox(tr("仅在体积变小时才替换（不反向增大文件）"))
         self.cb_smaller.setChecked(True)
-        self.cb_gray = QCheckBox("灰度图自动转灰度（进一步减小）")
+        self.cb_gray = QCheckBox(tr("灰度图自动转灰度（进一步减小）"))
         self.cb_gray.setChecked(True)
-        self.cb_meta = QCheckBox("剥离 EXIF / ICC 元数据")
+        self.cb_meta = QCheckBox(tr("剥离 EXIF / ICC 元数据"))
         self.cb_meta.setChecked(True)
-        self.cb_alpha = QCheckBox("透明背景转白底（可用 JPEG）")
+        self.cb_alpha = QCheckBox(tr("透明背景转白底（可用 JPEG）"))
         self.cb_alpha.setChecked(True)
-        self.cb_graphics = QCheckBox("图形类图片自动选用调色板 PNG（照片不会走量化）")
+        self.cb_graphics = QCheckBox(tr("图形类图片自动选用调色板 PNG（照片不会走量化）"))
         self.cb_graphics.setChecked(True)
         for cb in (self.cb_smaller, self.cb_gray, self.cb_meta, self.cb_alpha, self.cb_graphics):
             v.addWidget(cb)
 
         self.cb_reading = QCheckBox(
-            "阅读流畅优先：先把所有图片统一转成 baseline JPEG（PDF 内不再有 Flate 图像）")
+            tr("阅读流畅优先：先把所有图片统一转成 baseline JPEG（PDF 内不再有 Flate 图像）"))
         v.addWidget(self.cb_reading)
         mp_row = QHBoxLayout()
-        mp_row.addWidget(QLabel("单页图像像素上限"))
+        mp_row.addWidget(QLabel(tr("单页图像像素上限")))
         self.max_mp = QDoubleSpinBox()
         self.max_mp.setRange(0, 40)
         self.max_mp.setValue(4.0)
         self.max_mp.setDecimals(1)
         self.max_mp.setSuffix(" MP")
-        self.max_mp.setSpecialValueText("不限制")
+        self.max_mp.setSpecialValueText(tr("不限制"))
         mp_row.addWidget(self.max_mp)
-        mp_row.addWidget(self._hint("4 MP ≈ 12 MB 解码内存；移动端建议 3–4 MP"), 1)
+        mp_row.addWidget(self._hint(tr("4 MP ≈ 12 MB 解码内存；移动端建议 3–4 MP")), 1)
         v.addLayout(mp_row)
         self.cb_reading.toggled.connect(lambda *_: self._sync_reading_enabled())
         self._sync_reading_enabled()
 
-        note = QLabel("逻辑：按页面实际 ppi 双立方下采样 → baseline JPEG（不用渐进式，兼容移动端）"
+        note = QLabel(tr("逻辑：按页面实际 ppi 双立方下采样 → baseline JPEG（不用渐进式，兼容移动端）"
                       "→ 仅图形类图片尝试调色板 PNG → 与无损流比体积取小者。页面物理尺寸不变；"
-                      "想再缩小，优先用「最长边限制」缩小页面，而不是把 ppi 压到 72 以下。")
+                      "想再缩小，优先用「最长边限制」缩小页面，而不是把 ppi 压到 72 以下。"))
         note.setObjectName("hint")
         note.setWordWrap(True)
         v.addWidget(note)
@@ -656,74 +708,74 @@ class MainWindow(QMainWindow):
         return g
 
     def _output_group(self):
-        g = QGroupBox("③ 输出位置与文件名")
+        g = QGroupBox(tr("③ 输出位置与文件名"))
         v = QGridLayout(g)
         v.setSpacing(7)
-        v.addWidget(QLabel("保存目录"), 0, 0)
+        v.addWidget(QLabel(tr("保存目录")), 0, 0)
         self.out_dir = QLineEdit()
         self.out_dir.setText(os.path.join(os.path.expanduser("~"), "Desktop"))
         v.addWidget(self.out_dir, 0, 1)
-        b1 = QPushButton("浏览…")
+        b1 = QPushButton(tr("浏览…"))
         b1.clicked.connect(self.choose_dir)
         v.addWidget(b1, 0, 2)
-        v.addWidget(QLabel("文件名"), 1, 0)
+        v.addWidget(QLabel(tr("文件名")), 1, 0)
         self.out_name = QLineEdit()
-        self.out_name.setText("图片合集_" + datetime.now().strftime("%Y%m%d_%H%M"))
+        self.out_name.setText(tr("图片合集_") + datetime.now().strftime("%Y%m%d_%H%M"))
         v.addWidget(self.out_name, 1, 1, 1, 2)
-        self.cb_bookmark = QCheckBox("按文件名生成 PDF 书签（目录）")
+        self.cb_bookmark = QCheckBox(tr("按文件名生成 PDF 书签（目录）"))
         self.cb_bookmark.setChecked(True)
         v.addWidget(self.cb_bookmark, 2, 0, 1, 3)
-        v.addWidget(self._hint("输出为单个 PDF，图片张数 = 页数；文件不存在时自动建目录"), 3, 0, 1, 3)
+        v.addWidget(self._hint(tr("输出为单个 PDF，图片张数 = 页数；文件不存在时自动建目录")), 3, 0, 1, 3)
         return g
 
     def _security_group(self):
-        g = QGroupBox("④ PDF 密码与权限")
+        g = QGroupBox(tr("④ PDF 密码与权限"))
         v = QVBoxLayout(g)
-        self.cb_encrypt = QCheckBox("启用密码保护（打开 PDF 必须输入口令）")
+        self.cb_encrypt = QCheckBox(tr("启用密码保护（打开 PDF 必须输入口令）"))
         v.addWidget(self.cb_encrypt)
 
         form = QGridLayout()
         form.setSpacing(6)
         r = 0
-        form.addWidget(QLabel("打开密码"), r, 0)
+        form.addWidget(QLabel(tr("打开密码")), r, 0)
         self.pw_user = QLineEdit()
         self.pw_user.setEchoMode(QLineEdit.EchoMode.Password)
-        self.pw_user.setPlaceholderText("必填 · 打开 PDF 时输入")
+        self.pw_user.setPlaceholderText(tr("必填 · 打开 PDF 时输入"))
         form.addWidget(self.pw_user, r, 1, 1, 2)
         r += 1
-        form.addWidget(QLabel("确认密码"), r, 0)
+        form.addWidget(QLabel(tr("确认密码")), r, 0)
         self.pw_confirm = QLineEdit()
         self.pw_confirm.setEchoMode(QLineEdit.EchoMode.Password)
-        self.pw_confirm.setPlaceholderText("再输入一次")
+        self.pw_confirm.setPlaceholderText(tr("再输入一次"))
         form.addWidget(self.pw_confirm, r, 1, 1, 2)
         r += 1
-        form.addWidget(QLabel("所有者密码"), r, 0)
+        form.addWidget(QLabel(tr("所有者密码")), r, 0)
         self.pw_owner = QLineEdit()
         self.pw_owner.setEchoMode(QLineEdit.EchoMode.Password)
-        self.pw_owner.setPlaceholderText("可选 · 留空则与打开密码相同")
+        self.pw_owner.setPlaceholderText(tr("可选 · 留空则与打开密码相同"))
         form.addWidget(self.pw_owner, r, 1, 1, 2)
         r += 1
-        self.cb_show_pw = QCheckBox("显示密码")
+        self.cb_show_pw = QCheckBox(tr("显示密码"))
         form.addWidget(self.cb_show_pw, r, 1)
         self.pw_hint = QLabel("")
         self.pw_hint.setObjectName("hint")
         form.addWidget(self.pw_hint, r, 2)
         r += 1
-        form.addWidget(QLabel("加密方式"), r, 0)
+        form.addWidget(QLabel(tr("加密方式")), r, 0)
         self.enc_method = QComboBox()
         for key, label in core.ENCRYPTION_LABELS.items():
-            self.enc_method.addItem(label, key)
+            self.enc_method.addItem(tr(label), key)
         form.addWidget(self.enc_method, r, 1, 1, 2)
         v.addLayout(form)
 
-        lab = QLabel("允许的操作（取消勾选 = 禁用相应权限）")
+        lab = QLabel(tr("允许的操作（取消勾选 = 禁用相应权限）"))
         lab.setObjectName("section")
         v.addWidget(lab)
-        self.sec_print = QCheckBox("打印")
-        self.sec_print_hq = QCheckBox("高质量打印")
-        self.sec_copy = QCheckBox("复制文本 / 图像")
-        self.sec_modify = QCheckBox("修改内容 / 页面组装")
-        self.sec_annotate = QCheckBox("注释 / 填写表单")
+        self.sec_print = QCheckBox(tr("打印"))
+        self.sec_print_hq = QCheckBox(tr("高质量打印"))
+        self.sec_copy = QCheckBox(tr("复制文本 / 图像"))
+        self.sec_modify = QCheckBox(tr("修改内容 / 页面组装"))
+        self.sec_annotate = QCheckBox(tr("注释 / 填写表单"))
         grid = QGridLayout()
         for i, cb in enumerate((self.sec_print, self.sec_print_hq, self.sec_copy,
                                 self.sec_modify, self.sec_annotate)):
@@ -731,9 +783,9 @@ class MainWindow(QMainWindow):
             grid.addWidget(cb, i // 2, i % 2)
         v.addLayout(grid)
 
-        note = QLabel("打开密码是硬保护；权限限制取决于阅读器是否遵守标准，部分工具可绕过。"
+        note = QLabel(tr("打开密码是硬保护；权限限制取决于阅读器是否遵守标准，部分工具可绕过。"
                       "忘记密码无法恢复。旧版移动阅读器可能不支持 AES-256，若移动端白页，"
-                      "改用 AES-128 / RC4-128 或不加密。")
+                      "改用 AES-128 / RC4-128 或不加密。"))
         note.setObjectName("hint")
         note.setWordWrap(True)
         v.addWidget(note)
@@ -745,39 +797,39 @@ class MainWindow(QMainWindow):
         return g
 
     def _archive_group(self):
-        g = QGroupBox("⑤ 压缩包解压上限")
+        g = QGroupBox(tr("⑤ 压缩包解压上限"))
         v = QVBoxLayout(g)
         row = QHBoxLayout()
-        row.addWidget(QLabel("解压总体积上限"))
+        row.addWidget(QLabel(tr("解压总体积上限")))
         self.archive_limit_gb = QDoubleSpinBox()
         self.archive_limit_gb.setRange(0, 100)
         self.archive_limit_gb.setDecimals(1)
         self.archive_limit_gb.setSingleStep(0.5)
         self.archive_limit_gb.setValue(1.0)
         self.archive_limit_gb.setSuffix(" GB")
-        self.archive_limit_gb.setSpecialValueText("不限制")
-        self.archive_limit_gb.setToolTip("设为 0（不限制）可完整解压任意大小的压缩包")
+        self.archive_limit_gb.setSpecialValueText(tr("不限制"))
+        self.archive_limit_gb.setToolTip(tr("设为 0（不限制）可完整解压任意大小的压缩包"))
         row.addWidget(self.archive_limit_gb)
         row.addStretch(1)
         v.addLayout(row)
 
-        self.cb_archive_ask = QCheckBox("超限时弹窗询问是否继续（关闭则直接中止）")
+        self.cb_archive_ask = QCheckBox(tr("超限时弹窗询问是否继续（关闭则直接中止）"))
         self.cb_archive_ask.setChecked(True)
         v.addWidget(self.cb_archive_ask)
 
         quick = QHBoxLayout()
-        quick.addWidget(QLabel("快捷："))
+        quick.addWidget(QLabel(tr("快捷：")))
         for label, val in (("1 GB", 1.0), ("3 GB", 3.0), ("10 GB", 10.0),
-                           ("不限制", 0.0)):
+                           (tr("不限制"), 0.0)):
             b = QPushButton(label)
             b.clicked.connect(lambda _=False, x=val: self.archive_limit_gb.setValue(x))
             quick.addWidget(b)
         v.addLayout(quick)
 
         note = QLabel(
-            "超过上限时不再自动终止：默认弹窗问「继续 / 中止」，选继续即完整解压；"
+            tr("超过上限时不再自动终止：默认弹窗问「继续 / 中止」，选继续即完整解压；"
             "也可把上限调高或设为「不限制」。单文件 100 MB、最多 500 张仍固定。"
-            "RAR 需本机安装 7-Zip 或 WinRAR。")
+            "RAR 需本机安装 7-Zip 或 WinRAR。"))
         note.setObjectName("hint")
         note.setWordWrap(True)
         v.addWidget(note)
@@ -792,7 +844,7 @@ class MainWindow(QMainWindow):
         if not self.cb_archive_ask.isChecked():
             return False
         r = QMessageBox.question(
-            self, "解压体积超过上限",
+            self, tr("解压体积超过上限"),
             f"该压缩包已解压 {total / 1024 ** 3:.2f} GB，超过设定上限 "
             f"{limit / 1024 ** 3:.1f} GB。\n\n"
             "可能是压缩包炸弹，也可能只是正常的大图包。\n是否继续解压？",
@@ -817,15 +869,15 @@ class MainWindow(QMainWindow):
         if not text:
             self.pw_hint.setText("")
         elif len(text) < 6:
-            self.pw_hint.setText("偏短，建议 ≥ 8 位")
+            self.pw_hint.setText(tr("偏短，建议 ≥ 8 位"))
         elif len(text) >= 12:
-            self.pw_hint.setText("长度良好")
+            self.pw_hint.setText(tr("长度良好"))
         else:
-            self.pw_hint.setText("长度中等")
+            self.pw_hint.setText(tr("长度中等"))
 
     def _update_dpi_hint(self, v):
-        self.dpi_hint.setText("低于 96 ppi：移动端放大后明显模糊" if v < 96
-                              else "屏幕 150 / 印刷 300")
+        self.dpi_hint.setText(tr("低于 96 ppi：移动端放大后明显模糊") if v < 96
+                              else tr("屏幕 150 / 印刷 300"))
 
     def _sync_reading_enabled(self):
         self.max_mp.setEnabled(self.cb_reading.isChecked())
@@ -843,7 +895,7 @@ class MainWindow(QMainWindow):
         if self.cb_encrypt.isChecked() and self.enc_method.currentIndex() == 0:
             self.enc_method.setCurrentIndex(1)  # AES-128，兼容旧移动阅读器
         self.status.setText(
-            "已应用移动端优化：120 ppi / 质量70 / 最长边297mm / 统一 baseline JPEG / 单页≤4MP")
+            tr("已应用移动端优化：120 ppi / 质量70 / 最长边297mm / 统一 baseline JPEG / 单页≤4MP"))
         QTimer.singleShot(6000, self._refresh_status)
 
     def apply_casual_preset(self):
@@ -861,7 +913,7 @@ class MainWindow(QMainWindow):
         if self.cb_encrypt.isChecked() and self.enc_method.currentIndex() == 0:
             self.enc_method.setCurrentIndex(1)  # AES-128，兼容旧移动阅读器
         self.status.setText(
-            "已应用「随便看看」：96 ppi / 质量55 / 最长边210mm / 统一 baseline JPEG / 单页≤1MP")
+            tr("已应用「随便看看」：96 ppi / 质量55 / 最长边210mm / 统一 baseline JPEG / 单页≤1MP"))
         QTimer.singleShot(6000, self._refresh_status)
 
     def _hint(self, text):
@@ -874,16 +926,16 @@ class MainWindow(QMainWindow):
         """左侧：预览小图 ⇄ 纯文字详细信息（不加载缩略图）。"""
         if self.stack.currentIndex() == 0:
             self.stack.setCurrentIndex(1)
-            self.view_btn.setText("切换为：预览小图")
+            self.view_btn.setText(tr("切换为：预览小图"))
             self.tip_label.setText(
-                "详细信息模式：纯文字、不显示预览图。列含像素尺寸、DPI、按当前设置算出的实际页面尺寸、"
-                "体积与修改时间；右键同样可置顶 / 移动 / 排序 / 移除，双击预览大图。")
+                tr("详细信息模式：纯文字、不显示预览图。列含像素尺寸、DPI、按当前设置算出的实际页面尺寸、"
+                "体积与修改时间；右键同样可置顶 / 移动 / 排序 / 移除，双击预览大图。"))
             self.refresh_detail(force=True)
         else:
             self.stack.setCurrentIndex(0)
-            self.view_btn.setText("切换为：详细信息")
+            self.view_btn.setText(tr("切换为：详细信息"))
             self.tip_label.setText(
-                "提示：可直接把图片/文件夹拖进窗口；列表内拖拽调整顺序；右键可置顶、上移、下移、置底；双击预览大图。")
+                tr("提示：可直接把图片/文件夹拖进窗口；列表内拖拽调整顺序；右键可置顶、上移、下移、置底；双击预览大图。"))
             self.reload_icons()
         self._refresh_status()
 
@@ -945,7 +997,7 @@ class MainWindow(QMainWindow):
                     page_txt = f"{pw / 72 * 25.4:.1f} × {ph / 72 * 25.4:.1f}"
                 except Exception:
                     page_txt = "—"
-                dpi_txt = f"{dpi[0]:.0f} × {dpi[1]:.0f}" if dpi else "—（用默认）"
+                dpi_txt = f"{dpi[0]:.0f} × {dpi[1]:.0f}" if dpi else tr("—（用默认）")
                 cells = [
                     f"{i + 1:02d}", os.path.basename(p), fmt,
                     f"{w} × {h}", dpi_txt, page_txt,
@@ -990,8 +1042,8 @@ class MainWindow(QMainWindow):
         self.max_edge.setEnabled(img_mode)
         self.max_edge_mm.setEnabled(img_mode and self.max_edge.currentIndex() == 3)
         self.paper.setEnabled(not img_mode)
-        self.paper_w.setEnabled(not img_mode and self.paper.currentText() == "自定义")
-        self.paper_h.setEnabled(not img_mode and self.paper.currentText() == "自定义")
+        self.paper_w.setEnabled(not img_mode and self.paper.currentText() == tr("自定义"))
+        self.paper_h.setEnabled(not img_mode and self.paper.currentText() == tr("自定义"))
         self.auto_rotate.setEnabled(not img_mode)
 
     def _sync_compress_enabled(self):
@@ -1092,20 +1144,20 @@ class MainWindow(QMainWindow):
 
     def add_files(self):
         files, _ = QFileDialog.getOpenFileNames(
-            self, "选择图片（可多选）", "",
-            "图片文件 (*.jpg *.jpeg *.jfif *.png *.bmp *.tif *.tiff *.webp *.gif);;所有文件 (*.*)")
+            self, tr("选择图片（可多选）"), "",
+            tr("图片文件 (*.jpg *.jpeg *.jfif *.png *.bmp *.tif *.tiff *.webp *.gif);;所有文件 (*.*)"))
         if files:
             self.add_paths(files)
 
     def add_folder(self):
-        d = QFileDialog.getExistingDirectory(self, "选择图片文件夹")
+        d = QFileDialog.getExistingDirectory(self, tr("选择图片文件夹"))
         if d:
             self.add_paths([d], sort_new=True)
 
     def add_archives(self):
         files, _ = QFileDialog.getOpenFileNames(
-            self, "选择压缩包（可多选）", "",
-            "压缩包 (*.zip *.7z *.rar);;所有文件 (*.*)")
+            self, tr("选择压缩包（可多选）"), "",
+            tr("压缩包 (*.zip *.7z *.rar);;所有文件 (*.*)"))
         if files:
             return self.add_paths(files)
         return 0
@@ -1132,8 +1184,8 @@ class MainWindow(QMainWindow):
                 except archive.PasswordRequired:
                     shutil.rmtree(dest, ignore_errors=True)
                     text, ok = QInputDialog.getText(
-                        self, "压缩包需要密码",
-                        f"{name} 已加密，请输入解压密码：",
+                        self, tr("压缩包需要密码"),
+                        f"{name}{tr(' 已加密，请输入解压密码：')}",
                         QLineEdit.EchoMode.Password)
                     if not ok:
                         break
@@ -1143,8 +1195,8 @@ class MainWindow(QMainWindow):
                 except archive.BadPassword:
                     shutil.rmtree(dest, ignore_errors=True)
                     text, ok = QInputDialog.getText(
-                        self, "密码错误",
-                        f"{name} 密码不正确，请重新输入（取消可跳过）：",
+                        self, tr("密码错误"),
+                        f"{name}{tr(' 密码不正确，请重新输入（取消可跳过）：')}",
                         QLineEdit.EchoMode.Password)
                     if not ok:
                         break
@@ -1154,28 +1206,28 @@ class MainWindow(QMainWindow):
                 except archive.LimitExceeded as e:
                     shutil.rmtree(dest, ignore_errors=True)
                     QMessageBox.warning(
-                        self, "已中止解压",
+                        self, tr("已中止解压"),
                         f"{name}\n\n{e}\n\n"
                         "如需导入，请在「⑤ 压缩包解压上限」调高数值或选择「不限制」，"
                         "或在超限弹窗中点「继续」。")
                     break
                 except archive.ArchiveError as e:
                     shutil.rmtree(dest, ignore_errors=True)
-                    QMessageBox.warning(self, "压缩包导入失败", f"{name}\n\n{e}")
+                    QMessageBox.warning(self, tr("压缩包导入失败"), f"{name}\n\n{e}")
                     break
                 except Exception as e:
                     shutil.rmtree(dest, ignore_errors=True)
-                    QMessageBox.warning(self, "压缩包导入失败", f"{name}\n\n{e}")
+                    QMessageBox.warning(self, tr("压缩包导入失败"), f"{name}\n\n{e}")
                     break
                 else:
                     if imgs:
                         self.temp_dirs.append(dest)
                         result.extend(imgs)
-                        self.status.setText(f"从 {name} 导入 {len(imgs)} 张图片")
+                        self.status.setText(f"{tr('从 ')}{name}{tr(' 导入 ')}{len(imgs)}{tr(' 张图片')}")
                     else:
                         shutil.rmtree(dest, ignore_errors=True)
-                        QMessageBox.information(self, "无图片",
-                                                f"{name} 中未找到支持的图片。")
+                        QMessageBox.information(self, tr("无图片"),
+                                                f"{name}{tr(' 中未找到支持的图片。')}")
                     break
         return result
 
@@ -1194,7 +1246,7 @@ class MainWindow(QMainWindow):
                 Qt.TransformationMode.SmoothTransformation))
             head.addWidget(lab)
         title = QLabel(
-            f"{APP_NAME}<br><span style='color:#2563eb;font-size:13px'>版本 v{APP_VER}</span>")
+            f"{APP_NAME}<br><span style='color:#2563eb;font-size:13px'>{tr('版本 v')}{APP_VER}</span>")
         title.setObjectName("aboutTitle")
         head.addWidget(title, 1)
         lay.addLayout(head)
@@ -1213,10 +1265,10 @@ class MainWindow(QMainWindow):
         lay.addStretch(1)
         row = QHBoxLayout()
         row.addStretch(1)
-        b_help = QPushButton("使用说明")
+        b_help = QPushButton(tr("使用说明"))
         b_help.clicked.connect(self.show_help)
         row.addWidget(b_help)
-        b_close = QPushButton("关闭")
+        b_close = QPushButton(tr("关闭"))
         b_close.setObjectName("primary")
         b_close.clicked.connect(dlg.accept)
         row.addWidget(b_close)
@@ -1373,21 +1425,21 @@ class MainWindow(QMainWindow):
             return
         menu = QMenu(self)
         acts = [
-            ("置顶", self.pin_top), ("上移", lambda: self.move_selected(-1)),
-            ("下移", lambda: self.move_selected(1)), ("置底", self.pin_bottom),
+            (tr("置顶"), self.pin_top), (tr("上移"), lambda: self.move_selected(-1)),
+            (tr("下移"), lambda: self.move_selected(1)), (tr("置底"), self.pin_bottom),
         ]
         for t, fn in acts:
             a = menu.addAction(t)
             a.triggered.connect(fn)
         menu.addSeparator()
-        a = menu.addAction("按文件名排序选中项")
+        a = menu.addAction(tr("按文件名排序选中项"))
         a.triggered.connect(self.sort_selected_only)
-        a = menu.addAction("反转选中项顺序")
+        a = menu.addAction(tr("反转选中项顺序"))
         a.triggered.connect(self.reverse_selected_only)
         menu.addSeparator()
-        a = menu.addAction("移除选中")
+        a = menu.addAction(tr("移除选中"))
         a.triggered.connect(self.remove_selected)
-        a = menu.addAction("预览大图")
+        a = menu.addAction(tr("预览大图"))
         a.triggered.connect(lambda: self.lst._preview(item))
         menu.exec(global_pos)
 
@@ -1433,9 +1485,9 @@ class MainWindow(QMainWindow):
                 total += os.path.getsize(self.lst.item(i).data(Qt.ItemDataRole.UserRole))
             except Exception:
                 pass
-        mode = "按图片实际尺寸" if self.rb_image.isChecked() else "统一纸张"
-        self.count_label.setText(f"图片列表  ·  {n} 张")
-        self.status.setText(f"共 {n} 张（选中 {sel}） · 源文件合计 {human_size(total)} · 页面：{mode}")
+        mode = tr("按图片实际尺寸") if self.rb_image.isChecked() else tr("统一纸张")
+        self.count_label.setText(f"{tr('图片列表')}  ·  {n} {tr('张')}")
+        self.status.setText(f"{tr('共 ')}{n} {tr('张（选中 ')}{sel}{tr('） · 源文件合计 ')}{human_size(total)}{tr(' · 页面：')}{mode}")
         self.refresh_detail()
 
     def build_settings(self):
@@ -1488,34 +1540,34 @@ class MainWindow(QMainWindow):
         return st
 
     def choose_dir(self):
-        d = QFileDialog.getExistingDirectory(self, "选择保存目录", self.out_dir.text())
+        d = QFileDialog.getExistingDirectory(self, tr("选择保存目录"), self.out_dir.text())
         if d:
             self.out_dir.setText(d)
 
     def start_convert(self):
         paths = self.current_paths()
         if not paths:
-            QMessageBox.warning(self, "无图片", "请先添加图片。")
+            QMessageBox.warning(self, tr("无图片"), tr("请先添加图片。"))
             return
         folder = self.out_dir.text().strip() or os.getcwd()
-        name = self.out_name.text().strip() or ("图片合集_" + datetime.now().strftime("%Y%m%d_%H%M"))
+        name = self.out_name.text().strip() or (tr("图片合集_") + datetime.now().strftime("%Y%m%d_%H%M"))
         if not name.lower().endswith(".pdf"):
             name += ".pdf"
         out = os.path.join(folder, name)
         if os.path.exists(out):
-            r = QMessageBox.question(self, "文件已存在", f"覆盖现有文件？\n{out}",
+            r = QMessageBox.question(self, tr("文件已存在"), f"{tr('覆盖现有文件？\n')}{out}",
                                      QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
             if r != QMessageBox.StandardButton.Yes:
                 return
         if self.cb_encrypt.isChecked():
             pw = self.pw_user.text()
             if not pw:
-                QMessageBox.warning(self, "缺少打开密码",
-                                    "已启用密码保护，请在「④ PDF 密码与权限」填写打开密码。")
+                QMessageBox.warning(self, tr("缺少打开密码"),
+                                    tr("已启用密码保护，请在「④ PDF 密码与权限」填写打开密码。"))
                 return
             if pw != self.pw_confirm.text():
-                QMessageBox.warning(self, "密码不一致",
-                                    "「打开密码」与「确认密码」不一致，请重新输入。")
+                QMessageBox.warning(self, tr("密码不一致"),
+                                    tr("「打开密码」与「确认密码」不一致，请重新输入。"))
                 return
         st = self.build_settings()
         st.title = os.path.splitext(name)[0]
@@ -1530,7 +1582,7 @@ class MainWindow(QMainWindow):
         self.go_btn.setEnabled(False)
         self.cancel_btn.setEnabled(True)
         self.open_btn.setEnabled(False)
-        self.status.setText("正在转换 …")
+        self.status.setText(tr("正在转换 …"))
         self.worker.start()
 
     def on_progress(self, done, total, msg):
@@ -1540,30 +1592,30 @@ class MainWindow(QMainWindow):
     def cancel_convert(self):
         if self.worker:
             self.worker.cancel()
-            self.status.setText("正在取消 …")
+            self.status.setText(tr("正在取消 …"))
 
     def on_failure(self, text):
         self._finish_ui()
-        QMessageBox.critical(self, "生成失败", text)
+        QMessageBox.critical(self, tr("生成失败"), text)
 
     def on_success(self, result):
         self._finish_ui()
         self.last_output = result["output"]
         self.open_btn.setEnabled(True)
         ratio = result["ratio"]
-        desc = (f"输出：{result['output']}\n\n"
-                f"页数：{result['pages']}\n"
-                f"源文件合计：{human_size(result['source_bytes'])}\n"
-                f"PDF 大小：{human_size(result['pdf_bytes'])}  "
-                f"（为源文件的 {ratio * 100:.0f}%）")
+        desc = (f"{tr('输出：')}{result['output']}{tr('\n\n页数：')}"
+                f"{result['pages']}{tr('\n源文件合计：')}"
+                f"{human_size(result['source_bytes'])}{tr('\nPDF 大小：')}"
+                f"{human_size(result['pdf_bytes'])}  "
+                f"({tr('为源文件的 ')}{ratio * 100:.0f}%)")
         if result.get("preprocessed"):
-            desc += "\n已预处理为 baseline JPEG（阅读流畅优先，PDF 内无 Flate 图像）"
+            desc += tr("\n已预处理为 baseline JPEG（阅读流畅优先，PDF 内无 Flate 图像）")
         if result.get("encrypted"):
-            desc += f"\n已加密：{result.get('encryption', '')} · 打开需输入口令"
+            desc += f"{tr('\n已加密：')}{result.get('encryption', '')}{tr(' · 打开需输入口令')}"
         if result["errors"]:
-            desc += "\n\n以下图片失败：\n" + "\n".join(result["errors"][:8])
-        self.status.setText(f"完成 · {result['pages']} 页 · {human_size(result['pdf_bytes'])}")
-        QMessageBox.information(self, "生成完成", desc)
+            desc += tr("\n\n以下图片失败：\n") + "\n".join(result["errors"][:8])
+        self.status.setText(f"{tr('完成 · ')}{result['pages']}{tr(' 页 · ')}{human_size(result['pdf_bytes'])}")
+        QMessageBox.information(self, tr("生成完成"), desc)
 
     def _finish_ui(self):
         self.go_btn.setEnabled(True)
@@ -1575,8 +1627,8 @@ class MainWindow(QMainWindow):
             QDesktopServices.openUrl(QUrl.fromLocalFile(os.path.dirname(self.last_output)))
 
     def show_help(self):
-        QMessageBox.information(self, "使用说明", (
-            "1. 添加：工具栏「添加图片 / 添加文件夹 / 添加压缩包」，或直接把图片、文件夹、压缩包拖进窗口。\n"
+        QMessageBox.information(self, tr("使用说明"), (
+            tr("1. 添加：工具栏「添加图片 / 添加文件夹 / 添加压缩包」，或直接把图片、文件夹、压缩包拖进窗口。\n"
             "   压缩包支持 ZIP（含 AES 密码）、7Z（含密码）、RAR；加密包会弹窗询问密码，本次会话记住。"
             "包内图片按文件名自然排序后进入列表；菜单「文件 → 导入压缩包并直接生成 PDF」可一步出文件。"
             "RAR 需要本机安装 7-Zip 或 WinRAR，ZIP / 7Z 无需任何外部工具。\n"
@@ -1611,7 +1663,7 @@ class MainWindow(QMainWindow):
             "「开始」集中常用操作与两个一键档，「帮助 → 关于」显示版本、许可证、技术栈与项目主页。\n\n"
             "9. 压缩包上限：「⑤ 压缩包解压上限」可设 0（不限制）～100 GB，默认 1 GB，"
             "另有 1/3/10 GB/不限制快捷按钮。超限时弹窗询问「继续 / 中止」，不再自动终止；"
-            "关闭「超限时弹窗询问」才会直接中止。单文件 100 MB、最多 500 张仍固定。"))
+            "关闭「超限时弹窗询问」才会直接中止。单文件 100 MB、最多 500 张仍固定。")))
 
 
 # ---------------------------------------------------------------- 入口
@@ -1719,6 +1771,7 @@ def _selftest():
         os.environ["QT_QPA_PLATFORM"] = "offscreen"
         qa = QApplication(sys.argv)
         qa.setStyle("Fusion")
+        theme.apply()
         w = MainWindow()
         if os.path.exists(tmp_img):
             w.add_paths([tmp_img])
@@ -1734,9 +1787,9 @@ def _selftest():
                and c.compress.reading_mode)
         lines.append("casual preset OK" if ok2 else "casual preset FAIL")
         titles = [m.title() for m in w.menuBar().findChildren(QMenu)]
-        ok3 = (any("开始" in t for t in titles)
-               and any("文件" in t for t in titles)
-               and any("帮助" in t for t in titles)
+        ok3 = (any(tr("开始") in t for t in titles)
+               and any(tr("文件") in t for t in titles)
+               and any(tr("帮助") in t for t in titles)
                and hasattr(w, "show_about"))
         lines.append("menu bar OK" if ok3 else "menu bar FAIL")
         ok4 = (w.archive_limit_bytes() == 1024 ** 3
@@ -1764,7 +1817,7 @@ def main():
     app = QApplication(sys.argv)
     app.setApplicationName(APP_NAME)
     app.setStyle("Fusion")
-    app.setStyleSheet(QSS)
+    theme.apply()
     ico = resource_path("assets/app.ico")
     if os.path.exists(ico):
         app.setWindowIcon(QIcon(ico))

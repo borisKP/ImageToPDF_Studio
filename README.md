@@ -1,9 +1,9 @@
 <div align="center">
 
-# ImageToPDF Studio v1.8
+# ImageToPDF Studio v1.9
 
-**图片按原尺寸转 PDF · Windows 桌面工具**
-**Batch images → PDF at original page size · Windows desktop app**
+**图片按原尺寸转 PDF · Windows 桌面工具 · 中英文 / 明暗主题**
+**Batch images → PDF at original page size · Windows desktop app · EN/UI + light/dark theme**
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![Platform](https://img.shields.io/badge/platform-Windows%20x64-lightgrey)
@@ -35,6 +35,7 @@
 | 阅读优化 | 「阅读流畅优先」统一预处理为 baseline JPEG；单页像素上限；「移动端一键优化」「随便看看 · 最小最快」两个一键档 |
 | PDF 安全 | AES-256 / AES-128 / RC4-128，打开密码 + 所有者密码 + 打印/复制/修改/注释权限 |
 | 其它 | 按文件名写书签、后台转换与取消、双击预览、进度条、顶部横栏菜单与「关于」对话框 |
+| 语言 / 主题（v1.9） | 「设置 → 语言」中文 / English 即时切换；「设置 → 外观」浅色 / 深色 / 跟随系统，选择持久保存。加新语言只需在 `src/i18n.py` 增加词典条目 |
 
 ### 快速开始
 
@@ -80,7 +81,7 @@ build.bat
 
 ### 体积
 
-单文件 EXE 约 **52 MB**（v1.8，v1.7 为 75 MB），免 Python 环境。精简手段：不重复收集 `mupdfcpp64.dll`；剔除未用的 Qt DLL/插件、PyMuPDF ONNX 布局模型、Pillow AVIF 解码器；不启用 UPX（onefile 的 CArchive 已 zlib 压缩，UPX 反而让 EXE 涨到 96 MB）。自查：`python scripts/analyze_exe_size.py`。
+单文件 EXE 约 **52 MB**（v1.9，v1.7 为 75 MB），免 Python 环境。精简手段：不重复收集 `mupdfcpp64.dll`；剔除未用的 Qt DLL/插件、PyMuPDF ONNX 布局模型、Pillow AVIF 解码器；不启用 UPX（onefile 的 CArchive 已 zlib 压缩，UPX 反而让 EXE 涨到 96 MB）。自查：`python scripts/analyze_exe_size.py`。
 
 ### 目录结构
 
@@ -92,6 +93,7 @@ ImageToPDF_Studio/
 ├── build.bat                     # 一键打包 + 同步源码交付物
 ├── ImageToPDF_Studio.spec        # PyInstaller 配置（52 MB 精简规则）
 ├── src/{app,core,archive}.py     # GUI / 转换引擎 / 压缩包
+├── src/i18n.py / theme.py        # 多语言字典 / 明暗主题
 ├── tests/                        # 回归测试
 ├── docs/                         # 使用者 / 源码说明 HTML
 ├── assets/                       # 图标 + 界面截图
@@ -106,6 +108,7 @@ python -m pip install -r requirements.txt
 python tests/test_core.py
 python tests/test_archive.py
 QT_QPA_PLATFORM=offscreen python tests/test_gui.py
+python tests/test_i18n_theme.py
 ```
 
 **发版规则**：版本号唯一来源是 `src/app.py` 的 `APP_VER`。改完版本运行 `build.bat`，它会打包 EXE、调用 `scripts/make_source_bundle.py` 同步所有文档版本号并重建源码包，然后**自动推送 GitHub 并发布 Release（v+版本号）及三个资产（EXE / 源码 zip / 使用说明）**。详见 [`CONTRIBUTING.md`](CONTRIBUTING.md)。
@@ -133,10 +136,11 @@ Convert images to PDF with **one page per image at its own size** — no forced 
 | Reading optimization | "Smooth reading" preprocesses to baseline JPEG with a per-page pixel cap; one-click "Mobile optimized" and "Quick & smallest" presets |
 | PDF security | AES-256 / AES-128 / RC4-128, open + owner passwords, print/copy/modify/annotate permissions |
 | Extras | Bookmarks from filenames, background conversion with cancel, double-click preview, progress bar, menu bar and About dialog |
+| Language / theme (v1.9) | Preferences → Language: Chinese / English, instant switch. Preferences → Appearance: light / dark / follow system. Choices persist via QSettings. Add a language by adding one dictionary in `src/i18n.py` |
 
 ### Quick start
 
-Download `ImageToPDF_Studio_v1.8.exe` from [Releases](https://github.com/borisKP/ImageToPDF_Studio/releases/tag/v1.8) and run it — no Python required. If SmartScreen blocks it: right-click → Properties → Unblock, or "More info → Run anyway".
+Download `ImageToPDF_Studio_v1.9.exe` from [Releases](https://github.com/borisKP/ImageToPDF_Studio/releases/tag/v1.9) and run it — no Python required. If SmartScreen blocks it: right-click → Properties → Unblock, or "More info → Run anyway".
 
 From source:
 
@@ -174,7 +178,7 @@ Safety limits: images only, skips hidden files and path traversal, ≤100 MB per
 
 ### Size
 
-Single-file EXE ≈ **52 MB** (v1.8, down from 75 MB in v1.7). See the Chinese section above for the slimming rules; self-check with `python scripts/analyze_exe_size.py`.
+Single-file EXE ≈ **52 MB** (v1.9, down from 75 MB in v1.7). See the Chinese section above for the slimming rules; self-check with `python scripts/analyze_exe_size.py`.
 
 ### Development
 
@@ -183,6 +187,7 @@ python -m pip install -r requirements.txt
 python tests/test_core.py
 python tests/test_archive.py
 QT_QPA_PLATFORM=offscreen python tests/test_gui.py
+python tests/test_i18n_theme.py
 ```
 
 **Release rule**: `APP_VER` in `src/app.py` is the single source of truth. Bump it, run `build.bat` to repackage and regenerate source files, then the release is published to GitHub automatically with tag `v<version>` and three assets (EXE / source zip / manual). See [`CONTRIBUTING.md`](CONTRIBUTING.md).

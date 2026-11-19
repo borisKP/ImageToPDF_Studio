@@ -1,4 +1,4 @@
-# ImageToPDF Studio v1.8 运行 / 打包依赖
+# ImageToPDF Studio v1.9 运行 / 打包依赖
 # Python 3.10+ （本项目在 Python 3.13.14 / Windows x64 构建）
 PySide6>=6.8
 Pillow>=10.0

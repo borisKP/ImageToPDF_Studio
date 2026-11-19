@@ -26,7 +26,9 @@ def main():
     qapp = QApplication.instance() or QApplication([])
     qapp.setApplicationName(gui.APP_NAME)
     qapp.setStyle("Fusion")
-    qapp.setStyleSheet(gui.QSS)
+    import theme
+    theme.set_theme("light", notify=False)   # README 用浅色，稳定不受系统主题影响
+    theme.apply()
 
     w = gui.MainWindow()
     w.resize(1460, 900)
