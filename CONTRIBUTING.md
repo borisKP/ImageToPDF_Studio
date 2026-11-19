@@ -47,8 +47,16 @@ python src/app.py --selftest
    QT_QPA_PLATFORM=offscreen python tests/test_gui.py
    ```
 5. 交付 `dist/ImageToPDF_Studio.exe`、`dist/使用说明.html` 与 `源码交付/` 三个产物。
+6. **自动上传 GitHub**（约定：后续每次版本更新都必须执行）：
+
+   ```bash
+   python scripts/upload_to_github.py
+   ```
+
+   脚本读 `APP_VER`，提交全部改动、打 `v<版本>` 标签、推送到 `borisKP/ImageToPDF_Studio`，并创建/更新同名 Release，上传三个资产：`ImageToPDF_Studio_v<版本>.exe`、`ImageToPDF_Source_v<版本>.zip`、`Manual_v<版本>.html`。需要环境变量 `GITHUB_TOKEN`（classic PAT，勾 `repo`）；未设置会明确报错，不会静默跳过。**不要**把 Token 写入任何文件。
 
 > **不允许只更新 EXE 而不重跑源码生成器。** 若生成器提示「版本演进表缺少当前版本」，先补表再发版。
+> **不允许只本地发版而不上传 GitHub。** 第 6 步是发版的一部分。
 
 ## 打包注意事项
 

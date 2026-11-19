@@ -37,12 +37,12 @@ FILES = [
     # 文档
     "docs/使用说明.html", "docs/源码说明.html",
     # 资源
-    "assets/app.ico", "assets/app.png",
+    "assets/app.ico", "assets/app.png", "assets/screenshot_main.png",
     # 工具脚本
-    "scripts/make_icon.py", "scripts/make_source_bundle.py",
+    "scripts/make_icon.py", "scripts/make_source_bundle.py", "scripts/make_screenshot.py",
     "scripts/diagnose_compression.py", "scripts/diagnose_speed.py",
     "scripts/diagnose_webp.py", "scripts/diagnose_casual.py",
-    "scripts/analyze_exe_size.py",
+    "scripts/analyze_exe_size.py", "scripts/upload_to_github.py",
     # 生成物（整合版单文件，放在 zip 根便于直接运行）
     MERGED_NAME,
 ]
