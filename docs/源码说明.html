@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ImageToPDF Studio v1.8 · 源码说明</title>
+<style>
+  :root{--bg:#f4f6fa;--card:#fff;--line:#e2e8f0;--text:#1f2937;--muted:#64748b;--blue:#2563eb;--blue-soft:#eff6ff;}
+  *{box-sizing:border-box}
+  body{margin:0;padding:32px 18px 60px;background:var(--bg);color:var(--text);
+       font-family:"Microsoft YaHei UI","Segoe UI",-apple-system,sans-serif;line-height:1.7;font-size:14px}
+  .wrap{max-width:920px;margin:0 auto}
+  header{background:linear-gradient(120deg,#2563eb,#3b82f6);color:#fff;border-radius:14px;padding:26px 30px;margin-bottom:20px}
+  header h1{margin:0 0 6px;font-size:24px}
+  header p{margin:0;opacity:.9;font-size:13px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 24px;margin-bottom:16px}
+  h2{font-size:16px;margin:0 0 12px;padding-left:11px;border-left:4px solid var(--blue)}
+  h3{font-size:14px;margin:16px 0 6px;color:#334155}
+  p{margin:6px 0}
+  ul{margin:6px 0;padding-left:20px}
+  code{background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;padding:1px 5px;font-size:12px}
+  pre{background:#0f172a;color:#e2e8f0;border-radius:8px;padding:14px 16px;overflow-x:auto;font-size:12px;line-height:1.6}
+  pre code{background:none;border:none;color:inherit;padding:0}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--blue-soft);color:#1e3a8a;font-weight:600;white-space:nowrap}
+  tr:nth-child(even) td{background:#fafbfe}
+  .note{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 14px;font-size:13px;color:#78350f}
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>ImageToPDF Studio v1.8 · 源码说明</h1>
+  <p>GitHub 标准仓库结构 · MIT · Python 3.10+ / Windows x64 · 与 dist\ImageToPDF_Studio.exe 完全同源</p>
+</header>
+
+<div class="card">
+  <h2>仓库结构</h2>
+  <pre><code>ImageToPDF/
+├── .github/workflows/build.yml   # Windows CI：测试 + 打包 + 源码包
+├── .gitignore
+├── LICENSE                       # MIT
+├── README.md                     # 项目主页
+├── CHANGELOG.md                  # 版本演进
+├── CONTRIBUTING.md               # 开发与发版约定
+├── requirements.txt
+├── build.bat                     # 一键打包 EXE 并同步源码交付物
+├── ImageToPDF_Studio.spec        # PyInstaller 配置
+├── src/
+│   ├── app.py                    # 图形界面与入口（含菜单栏、关于、压缩包交互）
+│   ├── core.py                   # 转换引擎
+│   └── archive.py                # 压缩包导入（ZIP / 7Z / RAR + 密码）
+├── tests/
+│   ├── test_core.py
+│   ├── test_gui.py
+│   └── test_archive.py
+├── docs/
+│   ├── 使用说明.html
+│   └── 源码说明.html
+├── assets/
+│   ├── app.ico
+│   └── app.png
+├── scripts/
+│   ├── make_source_bundle.py     # 版本同步 + 整合版 + 源码 zip
+│   ├── make_icon.py
+│   └── diagnose_*.py             # 4 个实测诊断脚本
+├── dist/                         # 构建产物（不入库）
+└── 源码交付/                     # 构建产物（不入库）</code></pre>
+  <div class="note"><code>src/</code> 内使用扁平导入（<code>import core</code> / <code>import archive</code>），PyInstaller 通过 <code>pathex=['src']</code> 解析；测试与诊断脚本会自动把 <code>src/</code> 加入模块搜索路径。</div>
+</div>
+
+<div class="card">
+  <h2>关键文件</h2>
+  <table>
+    <tr><th>文件</th><th>作用</th></tr>
+    <tr><td><code>src/app.py</code></td><td>窗口、横栏菜单（文件/开始/视图/帮助）、关于对话框、双视图列表、排序、页面/压缩/输出/密码设置、压缩包密码交互、后台转换线程、<code>--selftest</code> 自检。</td></tr>
+    <tr><td><code>src/core.py</code></td><td>DPI 解析、页面尺寸计算、Acrobat 式压缩、阅读优先预处理、PDF 加密与书签。</td></tr>
+    <tr><td><code>src/archive.py</code></td><td>ZIP（含 AES 密码）/ 7Z（含密码）/ RAR（外部 7-Zip 或 WinRAR）解压；防路径穿越、数量与体积上限；统一异常 <code>PasswordRequired</code> / <code>BadPassword</code>。</td></tr>
+    <tr><td><code>ImageToPDF_整合版源码.py</code></td><td>生成器把 3 个模块内联成的可直接运行单文件（位于 <code>源码交付/</code>，zip 内也含一份）。</td></tr>
+    <tr><td><code>scripts/make_source_bundle.py</code></td><td>版本号唯一来源 <code>src/app.py → APP_VER</code>；同步文档版本号/日期、重建整合版与 <code>ImageToPDF_源码_v&lt;版本&gt;.zip</code>。</td></tr>
+    <tr><td><code>README.md</code> / <code>CONTRIBUTING.md</code></td><td>面向使用/开发者的仓库入口与发版规则。</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h2>运行 / 测试 / 打包</h2>
+  <pre><code>:: 直接用成品
+dist\ImageToPDF_Studio.exe
+
+:: 从源码运行
+python -m pip install -r requirements.txt
+python src/app.py
+python src/app.py --selftest
+
+:: 测试
+python tests/test_core.py
+python tests/test_archive.py
+QT_QPA_PLATFORM=offscreen python tests/test_gui.py
+
+:: 一键打包 EXE + 同步源码交付物
+build.bat</code></pre>
+  <div class="note"><code>ImageToPDF_Studio.spec</code> 顶部把 <code>set_exe_build_timestamp</code> / <code>update_exe_pe_checksum</code> 置为 no-op，用于绕开构建机对成品 exe 的 <code>open(exe,'wb')</code> 写入保护。这两步是可选后处理，跳过不影响运行；在其他机器上可删掉这 3 行。</div>
+</div>
+
+<div class="card">
+  <h2>模块结构与关键实现</h2>
+  <table>
+    <tr><th>模块</th><th>要点</th></tr>
+    <tr><td>页面尺寸</td><td><code>compute_page_size()</code>：按 <code>px ÷ DPI × 72 = pt</code> 生成页面，每页尺寸可不同；支持固定 DPI、最长边限制、统一纸张。</td></tr>
+    <tr><td>压缩</td><td><code>compress_stream()</code>：双立方下采样 → baseline JPEG → 仅图形类图片尝试调色板 PNG → 与无损流比体积取小；ppi 下限 72。</td></tr>
+    <tr><td>阅读优先</td><td><code>prepare_readable_stream()</code>：统一转 4:4:4 baseline JPEG + 单页像素上限，PDF 内不再有 FlateDecode 图像对象。</td></tr>
+    <tr><td>加密</td><td><code>security_kwargs()</code>：AES-256 / AES-128 / RC4-128 + 用户/所有者口令 + 权限位。</td></tr>
+    <tr><td>压缩包</td><td><code>extract_archive()</code>：pyzipper（AESZipFile）/ py7zr / 外部 7z.exe 或 UnRAR.exe；只导出图片，按文件名自然排序。</td></tr>
+    <tr><td>界面</td><td>QMenuBar 四组菜单 + 版本号角标；QStackedWidget 双视图；QThreadPool 异步缩略图；QThread 后台转换；右键菜单与文件拖放。</td></tr>
+  </table>
+  <h3>诊断脚本</h3>
+  <ul>
+    <li><code>scripts/diagnose_compression.py</code> —— 解包 PDF 图像对象，查 JPEG SOF marker 与色彩空间。</li>
+    <li><code>scripts/diagnose_speed.py</code> —— Flate vs DCT 渲染耗时、解压内存、线性化兼容性。</li>
+    <li><code>scripts/diagnose_webp.py</code> —— WebP 无法直接嵌入 PDF、二次有损代价。</li>
+    <li><code>scripts/diagnose_casual.py</code> —— 大原图降维到「网站展示副本」级别的体积与渲染对比。</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>版本演进</h2>
+  <table>
+    <tr><th>版本</th><th>内容</th></tr>
+    <tr><td>1.0</td><td>按图片原尺寸生成 PDF、排序/右键置顶、Acrobat 式压缩、独立 EXE。</td></tr>
+    <tr><td>1.1</td><td>左侧「预览小图 / 文字详细信息」视图切换。</td></tr>
+    <tr><td>1.2</td><td>PDF 口令保护与权限控制。</td></tr>
+    <tr><td>1.3</td><td>修复强压缩导致的移动端异常：强制 baseline JPEG、照片不做 256 色量化、ppi 下限 72。</td></tr>
+    <tr><td>1.4</td><td>阅读流畅优先预处理、单页像素上限、移动端一键优化。</td></tr>
+    <tr><td>1.5</td><td>「随便看看 · 最小最快」一键档；源码交付物与版本同步机制。</td></tr>
+    <tr><td>1.6</td><td>横栏菜单（文件/开始/视图/帮助）与关于对话框、常显版本号；压缩包（ZIP/7Z/RAR，可带密码）导入与一步出 PDF；GitHub 标准仓库结构、MIT 许可、CI 与开源文档。</td></tr>
+    <tr><td>1.7</td><td>压缩包解压总体积上限改为可配置（0 不限制～100 GB + 快捷按钮）；超限弹窗询问「继续 / 中止」，不再自动终止；<code>LimitExceeded</code> 与 <code>on_limit</code> 回调。</td></tr>
+    <tr><td>1.8</td><td>EXE 体积 75 MB → 52 MB：剔除重复 MuPDF DLL、未使用的 Qt 动态库/插件、ONNX 布局模型、AVIF 解码器、Cryptodome SelfTest；关闭适得其反的 UPX；新增 <code>scripts/analyze_exe_size.py</code>。</td></tr>
+  </table>
+</div>
+
+<footer>ImageToPDF Studio v1.8 · 源码快照 · 2026-11-19</footer>
+</div>
+</body>
+</html>

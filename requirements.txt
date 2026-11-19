@@ -1,0 +1,14 @@
+# ImageToPDF Studio v1.8 运行 / 打包依赖
+# Python 3.10+ （本项目在 Python 3.13.14 / Windows x64 构建）
+PySide6>=6.8
+Pillow>=10.0
+PyMuPDF>=1.24
+py7zr>=1.0
+pyzipper>=0.3
+PyInstaller>=6.10
+
+# 说明：
+# - core.py 只用到 PyMuPDF 核心（import pymupdf as fitz），不依赖 numpy/onnxruntime。
+#   新版 PyMuPDF 会把这些作为可选依赖装进来，可加 --no-deps 只装主包以精简环境。
+# - py7zr / pyzipper 用于导入 7z 与 AES 加密 ZIP；RAR 由本机 7-Zip / WinRAR 处理，无需额外 Python 包。
+# - 只用已编译的 EXE 时无需安装任何依赖。

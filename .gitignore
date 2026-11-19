@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# 构建产物（本地生成，不入库）
+build/
+dist/
+源码交付/
+*.spec.bak
+
+# 本地工具（UPX 等二进制不入库）
+tools/
+
+# 诊断 / 自检的中间输出
+_*/
+_selftest*.txt
+*.log
+
+# 系统
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -1,0 +1,49 @@
+name: build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Run tests
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          python tests/test_core.py
+          python tests/test_archive.py
+          python tests/test_gui.py
+
+      - name: Build EXE
+        run: python -m PyInstaller --noconfirm --distpath dist --workpath build ImageToPDF_Studio.spec
+
+      - name: Generate source bundle (version-synced)
+        run: python scripts/make_source_bundle.py
+
+      - name: EXE self test
+        run: |
+          dist/ImageToPDF_Studio.exe --selftest
+          Get-Content dist/_selftest.txt
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ImageToPDF-Windows
+          path: |
+            dist/ImageToPDF_Studio.exe
+            dist/使用说明.html
+            源码交付/*.zip
+            源码交付/ImageToPDF_整合版源码.py
