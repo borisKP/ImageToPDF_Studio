@@ -68,6 +68,9 @@ QLabel#version { color: $muted; padding-right: 12px; font-size: 11px; }
 QLabel#aboutTitle { font-size: 19px; font-weight: 700; color: $title; }
 QLabel#aboutBody { color: $muted; font-size: 12px; }
 QFrame#bottomBar { background: $panel; border-top: 1px solid $border; }
+QScrollArea { background: $window; border: none; }
+QScrollArea > QWidget > QWidget { background: $window; }
+QSplitter > QWidget { background: $window; }
 """
 
 LIGHT = dict(text="#1f2937", window="#f4f6fa", panel="#ffffff", input="#ffffff",
@@ -144,5 +147,28 @@ def stylesheet() -> str:
 
 def apply() -> None:
     app = QApplication.instance()
-    if app is not None:
-        app.setStyleSheet(stylesheet())
+    if app is None:
+        return
+    dark = resolved() == "dark"
+    c = DARK if dark else LIGHT
+
+    # 只设 QSS 不够：QScrollArea 的 viewport、QCheckBox 勾选框等由调色板绘制，
+    # 不跟着 QSS 走，深色下会露出系统默认的浅灰底纹。同步调色板。
+    pal = app.palette()
+    pal.setColor(QPalette.ColorRole.Window, QColor(c["window"]))
+    pal.setColor(QPalette.ColorRole.WindowText, QColor(c["text"]))
+    pal.setColor(QPalette.ColorRole.Base, QColor(c["input"]))
+    pal.setColor(QPalette.ColorRole.AlternateBase, QColor(c["panel"]))
+    pal.setColor(QPalette.ColorRole.Text, QColor(c["text"]))
+    pal.setColor(QPalette.ColorRole.Button, QColor(c["panel"]))
+    pal.setColor(QPalette.ColorRole.ButtonText, QColor(c["text"]))
+    pal.setColor(QPalette.ColorRole.Highlight, QColor(c["selection"]))
+    pal.setColor(QPalette.ColorRole.HighlightedText, QColor(c["on_selection"]))
+    pal.setColor(QPalette.ColorRole.Light, QColor(c["border"]))
+    pal.setColor(QPalette.ColorRole.Midlight, QColor(c["border"]))
+    pal.setColor(QPalette.ColorRole.Mid, QColor(c["muted"]))
+    pal.setColor(QPalette.ColorRole.Dark, QColor(c["border"]))
+    pal.setColor(QPalette.ColorRole.Shadow, QColor(c["border"]))
+    pal.setColor(QPalette.ColorRole.PlaceholderText, QColor(c["muted"]))
+    app.setPalette(pal)
+    app.setStyleSheet(stylesheet())
