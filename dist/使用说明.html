@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ImageToPDF Studio · 使用说明</title>
+<style>
+  :root{--bg:#f4f6fa;--card:#fff;--line:#e2e8f0;--text:#1f2937;--muted:#64748b;--blue:#2563eb;--blue-soft:#eff6ff;}
+  *{box-sizing:border-box}
+  body{margin:0;padding:32px 18px 60px;background:var(--bg);color:var(--text);
+       font-family:"Microsoft YaHei UI","Segoe UI",-apple-system,sans-serif;line-height:1.7;font-size:14px}
+  .wrap{max-width:900px;margin:0 auto}
+  header{background:linear-gradient(120deg,#2563eb,#3b82f6);color:#fff;border-radius:14px;padding:26px 30px;margin-bottom:20px}
+  header h1{margin:0 0 6px;font-size:24px;letter-spacing:.5px}
+  header p{margin:0;opacity:.9;font-size:13px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 24px;margin-bottom:16px}
+  h2{font-size:16px;margin:0 0 12px;padding-left:11px;border-left:4px solid var(--blue)}
+  h3{font-size:14px;margin:16px 0 6px;color:#334155}
+  p{margin:6px 0}
+  ul{margin:6px 0;padding-left:20px}
+  li{margin:4px 0}
+  code{background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;padding:1px 5px;font-size:12px}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--blue-soft);color:#1e3a8a;font-weight:600;white-space:nowrap}
+  tr:nth-child(even) td{background:#fafbfe}
+  .tag{display:inline-block;background:var(--blue-soft);color:var(--blue);border-radius:5px;padding:1px 7px;font-size:12px;margin-right:4px}
+  .note{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 14px;font-size:13px;color:#78350f}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .step{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:14px}
+  .step b{display:block;color:var(--blue);margin-bottom:4px}
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:24px}
+  @media(max-width:700px){.steps{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>ImageToPDF Studio v1.10</h1>
+  <p>Windows 独立 EXE · 免 Python 环境 · 按图片原尺寸生成 PDF · Acrobat DC 式压缩 · 口令保护 · 阅读优先预处理 · 随便看看一键档</p>
+</header>
+
+<div class="card">
+  <h2>三步出文件</h2>
+  <div class="steps">
+    <div class="step"><b>① 添加</b>工具栏「添加图片 / 添加文件夹 / 添加压缩包」，或把图片、文件夹、压缩包直接拖进窗口。列表显示缩略图、序号与像素尺寸。</div>
+    <div class="step"><b>② 排序</b>右上角选排序依据后点「应用排序」；也可列表内拖拽、右键置顶 / 上移 / 下移 / 置底、仅对选中项排序。</div>
+    <div class="step"><b>③ 生成</b>设页面尺寸与压缩档位 → 选保存目录与文件名 → 「生成 PDF」。完成后可直接打开输出文件夹。</div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>顶部横栏菜单 / 关于 / 版本号</h2>
+  <table>
+    <tr><th>菜单</th><th>内容</th></tr>
+    <tr><td>文件(&F)</td><td>添加图片 / 文件夹 / 压缩包、<b>导入压缩包并直接生成 PDF</b>、清空列表、退出</td></tr>
+    <tr><td>开始(&S)</td><td>生成 PDF、取消、上移 / 下移 / 置顶 / 置底 / 反转顺序、应用排序、两个一键档</td></tr>
+    <tr><td>视图(&V)</td><td>切换「预览小图 / 文字详细信息」</td></tr>
+    <tr><td>帮助(&H)</td><td>使用说明、<b>关于 ImageToPDF Studio</b>（版本号、许可证 MIT、技术栈、构建日期、项目主页）</td></tr>
+  </table>
+  <p>菜单栏右侧常显当前版本号；窗口标题也带版本号。常用操作另有工具栏按钮与快捷键（Ctrl+O 添加、Ctrl+Return 生成、Ctrl+T 切换视图、F1 说明）。</p>
+</div>
+
+<div class="card">
+  <h2>压缩包直接导入（可带密码）</h2>
+  <table>
+    <tr><th>格式</th><th>密码</th><th>依赖</th></tr>
+    <tr><td>ZIP（普通 / ZipCrypto / WinZip AES）</td><td>支持</td><td>程序内置，免外部工具</td></tr>
+    <tr><td>7Z</td><td>支持（含文件名加密）</td><td>程序内置，免外部工具</td></tr>
+    <tr><td>RAR / RAR5</td><td>支持</td><td>需本机安装 7-Zip 或 WinRAR；未安装时会明确提示，改用 ZIP / 7Z 即可</td></tr>
+  </table>
+  <p>加密包会弹窗询问密码，本次会话内会记住，后续压缩包自动复用；密码错误可重试或跳过。包内图片按文件名自然排序进入列表，只提取支持的图片格式，跳过隐藏文件与目录穿越，并限制单文件 ≤100 MB、总计 ≤1 GB、最多 500 张。解压到临时目录，关闭窗口时自动清理。</p>
+  <p><b>一步出文件</b>：「文件 → 导入压缩包并直接生成 PDF」；若列表中已有其它图片，会一并按当前顺序生成。</p>
+  <h3>解压体积上限（v1.7 起不再自动终止）</h3>
+  <p>旧版遇到解压内容超过 1 GB 会直接中止并提示「疑似压缩包炸弹」。现在「⑤ 压缩包解压上限」可自行配置，超限时由你决定是否继续：</p>
+  <table>
+    <tr><th>设置</th><th>行为</th></tr>
+    <tr><td>解压总体积上限</td><td>默认 1 GB；可设 0（<b>不限制</b>）～100 GB；快捷按钮 1 GB / 3 GB / 10 GB / 不限制</td></tr>
+    <tr><td>超限时弹窗询问是否继续</td><td>默认开启：弹窗「继续 / 中止」，点「继续」即完整解压该包。一次导入只询问一次</td></tr>
+    <tr><td>关闭询问</td><td>超限时直接中止该压缩包并提示如何调高上限；其它压缩包继续处理，程序不会退出</td></tr>
+  </table>
+  <div class="note">单文件 100 MB、最多 500 张图片仍为固定安全限制。若经常导入大图包，建议直接设「不限制」或 10 GB。</div>
+</div>
+
+<div class="card">
+  <h2>左侧视图切换（预览小图 ⇄ 纯文字详细信息）</h2>
+  <p>左侧顶部按钮「切换为：详细信息 / 切换为：预览小图」。两种模式共用同一份顺序，切换不丢排序：</p>
+  <table>
+    <tr><th>模式</th><th>显示内容</th></tr>
+    <tr><td>预览小图</td><td>缩略图 + 序号 + 文件名 + 像素尺寸，可直接拖拽调整顺序</td></tr>
+    <tr><td>详细信息（文字版）</td><td><b>不显示、也不生成任何预览图</b>；9 列表格：# / 文件名 / 格式 / 像素尺寸 / DPI / 页面尺寸(mm) / 文件大小 / 修改时间 / 所在路径</td></tr>
+  </table>
+  <p>「页面尺寸(mm)」按右侧当前页面设置实时计算，切换 A4 / 固定 DPI / 最长边限制后该列自动重算。文字视图同样支持右键置顶、上移、下移、置底、仅选中项排序、移除，以及双击预览大图；在文字视图中选中行后，工具栏按钮照常生效。</p>
+</div>
+
+<div class="card">
+  <h2>页面尺寸：不强制 A4</h2>
+  <p>默认读取每张图片自身的 DPI 元数据，按 <code>像素 ÷ DPI × 72 = 页面 pt</code> 生成页面。横图横页、竖图竖页，<b>每页尺寸可以不同</b>，与 Acrobat「保留原始尺寸」一致。实测示例：</p>
+  <table>
+    <tr><th>源图片</th><th>DPI</th><th>生成页面</th></tr>
+    <tr><td>3000 × 2000 横图</td><td>300</td><td>720 × 480 pt（10 × 6.67 英寸）</td></tr>
+    <tr><td>1200 × 1800 竖图</td><td>150</td><td>576 × 864 pt（8 × 12 英寸）</td></tr>
+    <tr><td>1600 × 900 截图</td><td>96</td><td>1200 × 675 pt（16.7 × 9.4 英寸）</td></tr>
+  </table>
+  <table>
+    <tr><th>选项</th><th>作用</th></tr>
+    <tr><td>读取图片自带 DPI</td><td>默认。元数据缺失时用「默认 DPI」（96）。</td></tr>
+    <tr><td>固定 DPI</td><td>忽略元数据，全部按指定 DPI 换算页面，输出尺寸可预测。</td></tr>
+    <tr><td>最长边限制</td><td>限制页面最长边（如 297mm）。手机照片常写 72/96 DPI，不限制会生成几十英寸的巨页。</td></tr>
+    <tr><td>统一纸张尺寸</td><td>需要 A4 / A3 / A5 / Letter / 自定义 mm 时用；横图自动切横向纸张，可设页边距，图片等比居中。</td></tr>
+  </table>
+  <div class="note">页面物理尺寸在压缩前后<b>始终不变</b>；压缩只降低嵌入图像的分辨率，不会把页面缩成 A4。</div>
+</div>
+
+<div class="card">
+  <h2>压缩：仿 Acrobat DC「PDF 优化器」</h2>
+  <p>处理链：计算图像在页面上的实际 ppi → 超过触发阈值则按双立方（LANCZOS）下采样到目标 ppi → <b>baseline JPEG</b> 编码（高质量自动 4:4:4）→ 仅图形类图片尝试调色板 PNG → 与无损流比体积取小者。目标 ppi 下限 72，低于 96 会实时提示。</p>
+  <table>
+    <tr><th>档位</th><th>目标 ppi</th><th>触发阈值</th><th>JPEG 质量</th><th>适用</th></tr>
+    <tr><td>无损 · 原始嵌入</td><td>—</td><td>—</td><td>—</td><td>直接嵌入原始 JPEG/PNG 字节，零重编码，印刷/归档</td></tr>
+    <tr><td>屏幕阅读（默认）</td><td>150</td><td>225</td><td>75</td><td>屏幕查看、微信/邮件传输</td></tr>
+    <tr><td>均衡</td><td>200</td><td>300</td><td>82</td><td>兼顾放大查看与体积</td></tr>
+    <tr><td>印刷</td><td>300</td><td>450</td><td>90</td><td>打印输出</td></tr>
+    <tr><td>极限压缩</td><td>96</td><td>144</td><td>58</td><td>只需快速浏览</td></tr>
+    <tr><td>自定义</td><td colspan="3">全部参数手动可调</td><td>按实际需要微调</td></tr>
+  </table>
+  <table>
+    <tr><th>参数</th><th>对应 Acrobat</th></tr>
+    <tr><td>目标分辨率 ppi</td><td>Downsample to … ppi</td></tr>
+    <tr><td>仅高于此值时 ppi</td><td>for images above … ppi</td></tr>
+    <tr><td>重采样算法</td><td>双立方 / 平均 / 次取样（Bicubic / Average / Subsampling）</td></tr>
+    <tr><td>JPEG 质量</td><td>Minimum / Low / Medium / High / Maximum（滑块 1–100 连续可调）</td></tr>
+    <tr><td>仅在体积变小时才替换</td><td>Optimize images only if there is a reduction in size</td></tr>
+    <tr><td>灰度自动转换、剥离 EXIF/ICC、透明转白底、截图用调色板 PNG</td><td>附加体积优化，后者对线稿/截图避免 JPEG 振铃</td></tr>
+  </table>
+  <p><span class="tag">实测</span>三张测试图（源 368 KB）无损档 PDF 377 KB；屏幕阅读档 67 KB，为源文件 18%，页数与三页尺寸完全不变。</p>
+</div>
+
+<div class="card">
+  <h2>移动端显示异常：原因与对策（v1.3 已修复）</h2>
+  <table>
+    <tr><th>原因</th><th>证据 / 表现</th><th>v1.3 处理</th></tr>
+    <tr><td>渐进式 JPEG</td><td>实测暴力压缩档 PDF 内出现 <code>jpeg PROGRESSIVE + /DCTDecode</code>。ISO 32000 明确指出嵌入 PDF 用渐进式 JPEG「没有好处，解码更慢、更耗内存」；PWG PDF/is 直接禁止；Adobe 兼容性附录 H 记载其与 DCTDecode 组合的历史兼容问题。移动端解码器内存小、实现简化 → 花屏 / 半幅 / 白页。</td><td>强制 <code>progressive=False</code>，只输出 baseline</td></tr>
+    <tr><td>照片被 256 色量化</td><td>「取字节最小者」会让调色板 PNG 对照片也胜出，产生色带、色块；PyMuPDF 又会把 P 模式 PNG 展开成 Flate RGB 原始像素流，解码内存峰值更高。</td><td>按「前 16 高频色覆盖率 ≥ 45%」自动识别截图 / 线稿，只有图形类才允许量化</td></tr>
+    <tr><td>有效分辨率过低</td><td>48–72 ppi 的图被拉伸到 254–423 mm 页面，手机上放大 2–3 倍 → 马赛克、文字糊、细线消失。这不是文件损坏，是采样不足。</td><td>目标 ppi 下限 72；低于 96 实时提示</td></tr>
+    <tr><td>页面物理尺寸过大</td><td>96 dpi 手机照会生成 423×238 mm 甚至更大页面，移动端渲染位图易超 GPU 纹理 / 内存上限 → 白页。</td><td>用「最长边限制 297 mm」</td></tr>
+    <tr><td>AES-256 加密（若同时开启）</td><td>V5 / R6 加密。旧移动阅读器不支持时会静默显示空白页而非提示输密码，极易误判成「压缩把文件压坏了」。</td><td>移动端白页时改用 AES-128 / RC4-128 或不加密</td></tr>
+  </table>
+  <div class="note">想更小又不异常：先设「最长边限制 297 mm」缩小页面，再保持 120–150 ppi、把 JPEG 质量降到 60–70。体积按页面面积平方下降，画质与兼容性都保住。不要靠继续压低 ppi 或启用渐进式 JPEG 换体积。</div>
+  <p><span class="tag">实测</span>v1.3 全档位检查：JPEG 均为 <code>BASELINE</code>，照片不再走调色板 PNG，ppi 不低于 72。</p>
+</div>
+
+<div class="card">
+  <h2>打开/翻页卡：为什么「最小」不等于「最适合阅读」</h2>
+  <p>同一张 4000×2250 截图，三种做法实测（PyMuPDF 单页渲染 3 次取平均）：</p>
+  <table>
+    <tr><th>做法</th><th>PDF 体积</th><th>解码后位图</th><th>单页渲染</th></tr>
+    <tr><td>PNG / FlateDecode（体积最小）</td><td>42 KB</td><td>25.7 MB</td><td><b>97.1 ms</b></td></tr>
+    <tr><td>baseline JPEG / DCTDecode（全分辨率）</td><td>284 KB</td><td>25.7 MB</td><td>76.1 ms</td></tr>
+    <tr><td>v1.4 阅读优先 + 移动端优化</td><td>66 KB</td><td><b>3.2 MB</b></td><td><b>20.3 ms</b></td></tr>
+  </table>
+  <p>PNG 在 PDF 里是 <code>/FlateDecode</code>，阅读器要先把整幅图解压成原始 RGB 像素再贴图；JPEG 是 <code>/DCTDecode</code>，走专用（常有硬件加速）解码路径。程序内实测 Flate 单位解码成本约为 DCT 的 8 倍 —— 3000×2000 的 JPEG 渲染 14.8 ms，1600×900 的 PNG 却要 29.6 ms。所以文件最小反而最卡。单页 25.7 MB 位图在手机上反复分配/释放，翻页必然顿；页面 1920×1080 pt（677×381 mm）还会让渲染位图超 GPU 纹理上限。</p>
+  <div class="note">PyMuPDF 2.1 已移除 PDF 线性化（<code>Linearisation is no longer supported</code>），「快速 Web 查看 / Fast Web View」不可用；提速只能靠图像编码 + 页面尺寸 + 像素上限。</div>
+  <h3>v1.4 做法：先转格式，再做 PDF</h3>
+  <table>
+    <tr><th>控件</th><th>作用</th></tr>
+    <tr><td>移动端一键优化</td><td>一键设为 120 ppi / 质量 70 / 最长边 297 mm / 单页 ≤4 MP / 统一 baseline JPEG；若已加密，自动把 AES-256 降为 AES-128</td></tr>
+    <tr><td>阅读流畅优先</td><td>生成 PDF 前先把每张图统一预处理成 baseline JPEG（4:4:4、质量 ≥70），PDF 内不再出现 <code>/FlateDecode</code> 图像对象；独立于压缩档位，勾上即生效</td></tr>
+    <tr><td>单页图像像素上限</td><td>默认 4 MP（≈12 MB 解码内存），超出等比缩小，控制翻页内存峰值</td></tr>
+  </table>
+  <p><span class="tag">代价</span>截图转 JPEG 体积会涨，但配合缩小页面后反而仍很小（42 KB → 66 KB，比全分辨率 JPEG 284 KB 小 4 倍），渲染快约 4.8 倍。</p>
+</div>
+
+<div class="card">
+  <h2>只要「随便看看」：为什么图片网站流畅，PDF 却卡</h2>
+  <p>图片网站不给你 10 MB 原图。它按屏幕尺寸生成 1200 px 展示副本（WebP / AVIF，约 200–300 KB），滚动时按需加载、渐进渲染。PDF 没有服务端，所有页数据一次性打包在文件里，所以<b>必须在生成时就把每张图降维到展示尺寸</b>。</p>
+  <p>实测一张 4000×3000 / 10.3 MB 的下载原图：网站展示副本 1200×900 WebP q75 仅 <b>236 KB（原图的 2.3%）</b>。</p>
+  <table>
+    <tr><th>做法</th><th>PDF 体积</th><th>解码内存</th><th>单页渲染</th></tr>
+    <tr><td>无损嵌入原图</td><td>10,346 KB</td><td>34.3 MB</td><td>763 ms</td></tr>
+    <tr><td>屏幕 150（默认档）</td><td>5,358 KB</td><td>34.3 MB</td><td>1305 ms</td></tr>
+    <tr><td>极限 96</td><td>4,219 KB</td><td>34.3 MB</td><td>1364 ms</td></tr>
+    <tr><td>移动端一键优化</td><td>294 KB</td><td>4.2 MB</td><td>27 ms</td></tr>
+    <tr><td><b>随便看看 · 最小最快</b></td><td><b>58 KB</b></td><td><b>1.4 MB</b></td><td><b>6.6 ms</b></td></tr>
+  </table>
+  <div class="note">关键：只调 ppi / JPEG 质量几乎没用，甚至更慢。网站下载图常缺 DPI 元数据，页面被算成 41.7 英寸，触发不了下采样，4000×3000 像素原封不动。必须同时限制<b>页面物理尺寸</b>（最长边）和<b>单页像素上限</b>。</div>
+  <h3>一键档参数</h3>
+  <table>
+    <tr><th>按钮</th><th>参数</th><th>适用</th></tr>
+    <tr><td>随便看看 · 最小最快</td><td>96 ppi / 质量 55 / 最长边 210 mm / 单页 ≤1 MP / 统一 baseline JPEG</td><td>随手翻看、微信 / 邮件传输、手机阅读；画质够用，不适合打印</td></tr>
+    <tr><td>移动端一键优化</td><td>120 ppi / 质量 70 / 最长边 297 mm / 单页 ≤4 MP / 统一 baseline JPEG</td><td>兼顾放大查看与流畅</td></tr>
+  </table>
+  <p>两个按钮都会把 AES-256 自动降为 AES-128（若已加密）。觉得糊就调高「单页图像像素上限」，或改用移动端一键优化。</p>
+</div>
+
+<div class="card">
+  <h2>PDF 密码与权限（④ 组）</h2>
+  <table>
+    <tr><th>项</th><th>说明</th></tr>
+    <tr><td>启用密码保护</td><td>勾选后打开 PDF 必须输入口令；不勾选则无加密，行为与 v1.0 一致</td></tr>
+    <tr><td>打开密码 / 确认密码</td><td>必填且两次一致，生成前校验；默认隐藏，可勾「显示密码」；实时提示长度</td></tr>
+    <tr><td>所有者密码</td><td>可选，留空 = 与打开密码相同；用于越过权限限制</td></tr>
+    <tr><td>加密方式</td><td>AES-256（默认，推荐）/ AES-128（旧版 Acrobat）/ RC4-128（兼容性最好）</td></tr>
+    <tr><td>允许的操作</td><td>打印、高质量打印、复制文本 / 图像、修改内容 / 页面组装、注释 / 填写表单。默认全允许，即只做「打开要密码」</td></tr>
+  </table>
+  <div class="note">打开密码是硬保护，忘记无法恢复，请自行留存。权限位依赖阅读器是否遵守 PDF 标准，部分工具可绕过；需要强保护请用打开密码 + AES-256。加密不影响页面尺寸、压缩、书签，生成完成后弹窗会显示加密方式。</div>
+  <p><span class="tag">实测</span>加密 PDF <code>needs_pass=1</code>、错误口令被拒、正确口令可打开且页数不变；未启用密码的 PDF 保持无加密。</p>
+</div>
+
+<div class="card">
+  <h2>排序与输出</h2>
+  <table>
+    <tr><th>方式</th><th>说明</th></tr>
+    <tr><td>文件名（自然）</td><td><code>2.jpg</code> 排在 <code>10.jpg</code> 前；可升/降序</td></tr>
+    <tr><td>修改时间 / 文件大小 / 扩展名</td><td>批量归档时按实际属性排</td></tr>
+    <tr><td>列表内拖拽</td><td>直接拖到目标位置</td></tr>
+    <tr><td>右键菜单</td><td>置顶、上移、下移、置底、移除、仅对选中项排序 / 反转、预览大图</td></tr>
+    <tr><td>输出</td><td>单个 PDF，图片张数 = 页数；可按文件名生成书签目录；自动建目录、覆盖前确认</td></tr>
+  </table>
+  <h3>支持格式</h3>
+  <p>图片：JPG / JPEG / PNG / BMP / TIF / TIFF / WebP / GIF / PPM / PGM / PBM。GIF、多帧 TIFF 取第一帧；带 EXIF 旋转的照片自动校正方向。<br>
+  压缩包：ZIP / 7Z / RAR（可带密码），详情见上方「压缩包直接导入」。</p>
+</div>
+
+<div class="card">
+  <h2>运行说明</h2>
+  <ul>
+    <li>双击 <code>ImageToPDF_Studio.exe</code> 即可，无需安装 Python 或任何运行库；首次启动约需数秒（单文件自解压）。</li>
+    <li>若被 SmartScreen 拦截：右键 → 属性 → 勾选「解除锁定」，或点「更多信息 → 仍要运行」。</li>
+    <li>转换在后台线程执行，可随时「取消」；单张图片失败不会中断整批，结果弹窗会列出失败项。</li>
+    <li>技术栈：PySide6（界面）+ Pillow（重采样/编码）+ PyMuPDF（PDF 封装）+ py7zr / pyzipper（压缩包），PyInstaller onefile 打包。</li>
+    <li>本项目以 MIT 许可证开源；仓库目录、开发与发版约定见 <code>README.md</code> / <code>CONTRIBUTING.md</code>。</li>
+  </ul>
+</div>
+
+<footer>ImageToPDF Studio v1.10 · 2026-11-20</footer>
+</div>
+</body>
+</html>
