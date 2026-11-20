@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ImageToPDF Studio v1.9 · 源码说明</title>
+<title>ImageToPDF Studio v1.10 · 源码说明</title>
 <style>
   :root{--bg:#f4f6fa;--card:#fff;--line:#e2e8f0;--text:#1f2937;--muted:#64748b;--blue:#2563eb;--blue-soft:#eff6ff;}
   *{box-sizing:border-box}
@@ -33,7 +33,7 @@
 <div class="wrap">
 
 <header>
-  <h1>ImageToPDF Studio v1.9 · 源码说明</h1>
+  <h1>ImageToPDF Studio v1.10 · 源码说明</h1>
   <p>GitHub 标准仓库结构 · MIT · Python 3.10+ / Windows x64 · 与 dist\ImageToPDF_Studio.exe 完全同源</p>
 </header>
 
@@ -139,10 +139,11 @@ build.bat</code></pre>
     <tr><td>1.7</td><td>压缩包解压总体积上限改为可配置（0 不限制～100 GB + 快捷按钮）；超限弹窗询问「继续 / 中止」，不再自动终止；<code>LimitExceeded</code> 与 <code>on_limit</code> 回调。</td></tr>
     <tr><td>1.8</td><td>EXE 体积 75 MB → 52 MB：剔除重复 MuPDF DLL、未使用的 Qt 动态库/插件、ONNX 布局模型、AVIF 解码器、Cryptodome SelfTest；关闭适得其反的 UPX；新增 <code>scripts/analyze_exe_size.py</code>。</td></tr>
     <tr><td>1.9</td><td>新增中英文界面即时切换（<code>src/i18n.py</code>，设置持久化）与浅色 / 深色 / 跟随系统主题（<code>src/theme.py</code>）；菜单新增「设置 → 语言 / 外观」；新增 <code>tests/test_i18n_theme.py</code>。</td></tr>
+    <tr><td>1.10</td><td>修复深色主题设置面板的浅灰底纹：<code>theme.apply()</code> 同步设置 Qt 调色板，滚动区与勾选框不再显示系统浅色；底栏去除硬编码白色。</td></tr>
   </table>
 </div>
 
-<footer>ImageToPDF Studio v1.9 · 源码快照 · 2026-11-19</footer>
+<footer>ImageToPDF Studio v1.10 · 源码快照 · 2026-11-20</footer>
 </div>
 </body>
 </html>
