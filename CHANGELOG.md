@@ -2,6 +2,12 @@
 
 本项目遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 与语义化版本。
 
+## [1.10] - 2026-11-20
+
+### Fixed
+- 深色主题右侧设置面板的浅灰底纹：`theme.apply()` 现同步设置 Qt 调色板（Window/Base/Button/Highlight 等），QScrollArea viewport、QCheckBox 勾选框不再是系统浅色；底栏去掉硬编码白色，统一走 QSS。
+- README 增加 Releases 历史版本入口说明。
+
 ## [1.9] - 2026-11-19
 
 ### Added
