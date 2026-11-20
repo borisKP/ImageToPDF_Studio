@@ -31,7 +31,7 @@ import theme
 from i18n import tr
 
 APP_NAME = "ImageToPDF Studio"
-APP_VER = "1.9"
+APP_VER = "1.10"
 LICENSE_NAME = "MIT License"
 PROJECT_URL = "https://github.com/borisKP/ImageToPDF_Studio"
 BUILD_DATE = "2026-11-19"
@@ -410,7 +410,7 @@ class MainWindow(QMainWindow):
 
         # 底栏
         bottom = QFrame()
-        bottom.setStyleSheet("QFrame{background:#ffffff;border-top:1px solid #e2e8f0;}")
+        bottom.setObjectName("bottomBar")   # 样式交给 theme.qss，深色下不再露出白底
         bl = QHBoxLayout(bottom)
         bl.setContentsMargins(14, 9, 14, 9)
         self.status = QLabel("")
