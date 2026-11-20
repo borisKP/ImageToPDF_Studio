@@ -1,6 +1,6 @@
 <div align="center">
 
-# ImageToPDF Studio v1.9
+# ImageToPDF Studio v1.10
 
 **图片按原尺寸转 PDF · Windows 桌面工具 · 中英文 / 明暗主题**
 **Batch images → PDF at original page size · Windows desktop app · EN/UI + light/dark theme**
@@ -10,7 +10,7 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Size](https://img.shields.io/badge/EXE-52%20MB-orange)
 
-[下载 EXE v1.8](https://github.com/borisKP/ImageToPDF_Studio/releases/download/v1.8/ImageToPDF_Studio_v1.8.exe) · [使用说明](docs/使用说明.html) · [Changelog](CHANGELOG.md) · [English ↓](#english)
+[下载 EXE v1.10](https://github.com/borisKP/ImageToPDF_Studio/releases/download/v1.10/ImageToPDF_Studio_v1.10.exe) · [使用说明](docs/使用说明.html) · [Changelog](CHANGELOG.md) · [全部历史版本 Releases](https://github.com/borisKP/ImageToPDF_Studio/releases) · [English ↓](#english)
 
 ![主界面](assets/screenshot_main.png)
 
@@ -41,7 +41,7 @@
 
 ```bat
 :: 方式一：直接运行（推荐，免 Python 环境）
-下载 Releases 里的 ImageToPDF_Studio_v1.8.exe，双击运行
+下载 Releases 里的 ImageToPDF_Studio_v1.10.exe，双击运行
 :: SmartScreen 拦截：右键 → 属性 → 解除锁定，或 更多信息 → 仍要运行
 
 :: 方式二：从源码运行
@@ -81,7 +81,7 @@ build.bat
 
 ### 体积
 
-单文件 EXE 约 **52 MB**（v1.9，v1.7 为 75 MB），免 Python 环境。精简手段：不重复收集 `mupdfcpp64.dll`；剔除未用的 Qt DLL/插件、PyMuPDF ONNX 布局模型、Pillow AVIF 解码器；不启用 UPX（onefile 的 CArchive 已 zlib 压缩，UPX 反而让 EXE 涨到 96 MB）。自查：`python scripts/analyze_exe_size.py`。
+单文件 EXE 约 **52 MB**（v1.10，v1.7 为 75 MB），免 Python 环境。精简手段：不重复收集 `mupdfcpp64.dll`；剔除未用的 Qt DLL/插件、PyMuPDF ONNX 布局模型、Pillow AVIF 解码器；不启用 UPX（onefile 的 CArchive 已 zlib 压缩，UPX 反而让 EXE 涨到 96 MB）。自查：`python scripts/analyze_exe_size.py`。
 
 ### 目录结构
 
@@ -151,6 +151,8 @@ python -m pip install -r requirements.txt
 python src/app.py
 ```
 
+All historical versions are listed at [Releases](https://github.com/borisKP/ImageToPDF_Studio/releases) (GitHub shows only the latest at the top; expand "Previous releases" for older ones).
+
 Headless self-test: `python src/app.py --selftest` (writes `_selftest.txt`). Build your own EXE with `build.bat`.
 
 ### Usage
@@ -178,7 +180,7 @@ Safety limits: images only, skips hidden files and path traversal, ≤100 MB per
 
 ### Size
 
-Single-file EXE ≈ **52 MB** (v1.9, down from 75 MB in v1.7). See the Chinese section above for the slimming rules; self-check with `python scripts/analyze_exe_size.py`.
+Single-file EXE ≈ **52 MB** (v1.10, down from 75 MB in v1.7). See the Chinese section above for the slimming rules; self-check with `python scripts/analyze_exe_size.py`.
 
 ### Development
 
